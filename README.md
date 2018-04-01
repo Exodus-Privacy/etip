@@ -1,4 +1,4 @@
-# ETIP - εxodus trackers investigation platform
+# ETIP - εxodus tracker investigation platform
 ETIP is meant to ease investigations on tracker detection. For the moment, it offers few functionalities: 
 * track all modifications on trackers
 * detect rules collisions for both network and code signature
@@ -12,6 +12,7 @@ Create the Python virtual env
 ```commandline
 cd etip
 virtualenv venv -p python3.5
+source venv/bin/activate
 ```
 Install dependencies
 ```commandline
