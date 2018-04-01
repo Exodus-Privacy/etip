@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 User=exodus
-WorkingDirectory=/home/exodus/etip/
-ExecStart=/home/exodus/etip/venv/bin/gunicorn --workers 1 --timeout 240 --bind 127.0.0.1:8899 etip.wsgi
+WorkingDirectory=/home/exodus/etip/etip/
+ExecStart=/home/exodus/etip/venv/bin/gunicorn --workers 1 --timeout 240 --bind 0.0.0.0:8899 etip.wsgi
 StandardOutput=journal
 StandardError=inherit
 
