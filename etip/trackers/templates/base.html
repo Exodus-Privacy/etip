@@ -1,19 +1,21 @@
 <!doctype html>
 <html>
 <head>
-    {# Load the tag library #}
-    {% load bootstrap3 %}
-
-    {# Load CSS and JavaScript #}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
-
-    {# Display django.contrib.messages as Bootstrap alerts #}
-    {% bootstrap_messages %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js" integrity="sha384-feJI7QwhOS+hwpX2zkaeJQjeiwlhOP+SdQDqhgvvo1DsjtiSQByFdThsxO669S2D" crossorigin="anonymous"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
-            font-size: 0.9rem;
+        html {
+            font-size : 0.8em;
+        }
+        .tooltip-inner {
+            text-align: left;
+        }
+        thead {
+            font-weight: bold;
+            font-size : 1.1em;
         }
     </style>
     <title>εxodus</title>
@@ -21,63 +23,8 @@
 <body>
 <nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
     <a class="navbar-brand" href="/">
-        <object width="50px" style="margin-bottom:-15px" data="/static/img/logo_purple.svg" type="image/svg+xml">
-        </object>
-        <span class="h2">εxodus</span> <span class="small text-muted">v1.2</span>
+        <span class="h2">εxodus</span> <span class="small text-muted">ETIP v1.0</span>
     </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
-            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <div class="dropdown">
-            <button class="btn nav-item btn-info dropdown-toggle" type="button" id="ep_dd"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Exodus Privacy
-            </button>
-            <div class="dropdown-menu" aria-labelledby="ep_dd">
-                <a class="dropdown-item" target="_blank" href="https://exodus-privacy.eu.org">Home</a>
-                <a class="dropdown-item" target="_blank" href="https://exodus-privacy.eu.org/#help">Help us!</a>
-                <a class="dropdown-item" target="_blank" href="https://github.com/Exodus-Privacy/exodus/issues">Report an issue</a>
-            </div>
-        </div>
-        &nbsp;
-        <div class="dropdown">
-            <button class="btn nav-item btn-secondary dropdown-toggle" type="button" id="reports_dd"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Reports
-            </button>
-            <div class="dropdown-menu" aria-labelledby="reports_dd">
-                <a class="dropdown-item" href="/reports/">All reports</a>
-                <a class="dropdown-item" href="/reports/apps/">All applications</a>
-                <a class="dropdown-item" href="/search/">Search</a>
-            </div>
-        </div>
-        &nbsp;
-        <div class="dropdown">
-            <button class="btn nav-item btn-secondary dropdown-toggle" type="button" id="trackers_dd"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Trackers
-            </button>
-            <div class="dropdown-menu" aria-labelledby="trackers_dd">
-                <a class="dropdown-item" href="/trackers/">List</a>
-                <a class="dropdown-item" href="/reports/stats/">Statistics</a>
-            </div>
-        </div>
-        &nbsp
-        <div class="dropdown">
-            <button class="btn nav-item btn-secondary dropdown-toggle" type="button" id="analysis_dd"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Analysis
-            </button>
-            <div class="dropdown-menu" aria-labelledby="analysis_dd">
-                {% if request.user.is_superuser %}
-                    <a class="dropdown-item" href="/analysis/">List</a>
-                {% endif %}
-                <a class="dropdown-item" href="/analysis/submit/">Submit</a>
-            </div>
-        </div>
     </div>
 </nav>
 <br>

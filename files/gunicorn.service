@@ -1,0 +1,15 @@
+[Unit]
+Description=Gunicorn daemon for ETIP
+After=network.target
+
+[Service]
+User=exodus
+WorkingDirectory=/home/exodus/etip/
+ExecStart=/home/exodus/etip/venv/bin/gunicorn --workers 1 --timeout 240 --bind 127.0.0.1:8899 etip.wsgi
+StandardOutput=journal
+StandardError=inherit
+
+# Specifies the maximum file descriptor number that can be opened by this process
+LimitNOFILE=65536
+[Install]
+WantedBy=multi-user.target
