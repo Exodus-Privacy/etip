@@ -27,3 +27,8 @@ Start the server
 ```commandline
 python manage.py runserver
 ```
+
+## Import data
+They are 2 commands:
+* `python manage.py import_trackers` to import tracker definitions from the official instance of εxodus
+* `python manage.py import_categories` to import predefined tracker categories
