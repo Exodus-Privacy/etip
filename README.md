@@ -3,6 +3,9 @@ ETIP is meant to ease investigations on tracker detection. For the moment, it of
 * track all modifications on trackers
 * detect rules collisions for both network and code signature
 
+## Contribute to the identification of trackers
+If you wish to help us identify new trackers, you can request an ETIP account by sending a pseudonym and an email address to etip@exodus-privacy.eu.org
+
 ## Installation
 Clone the project
 ```commandline
