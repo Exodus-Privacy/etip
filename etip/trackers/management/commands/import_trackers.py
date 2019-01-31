@@ -11,8 +11,8 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             'filename',
-            nargs = '?',
-            default = 'https://reports.exodus-privacy.eu.org/api/trackers'
+            nargs='?',
+            default='https://reports.exodus-privacy.eu.org/api/trackers'
         )
 
     def handle(self, *args, **options):
@@ -24,13 +24,13 @@ class Command(BaseCommand):
 
         for id, tracker in trackers['trackers'].items():
             model = Tracker(
-                name = tracker['name'],
-                description = tracker['description'],
-                created = tracker['creation_date'],
-                code_signature = tracker['code_signature'],
-                network_signature = tracker['network_signature'],
-                website = tracker['website'],
-                is_in_exodus = True,
+                name=tracker['name'],
+                description=tracker['description'],
+                created=tracker['creation_date'],
+                code_signature=tracker['code_signature'],
+                network_signature=tracker['network_signature'],
+                website=tracker['website'],
+                is_in_exodus=True,
             )
 
             model.save()

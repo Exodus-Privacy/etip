@@ -1,15 +1,16 @@
-import uuid, re
+import re
+import uuid
 
 from django.db import models
 
 
 class Category(models.Model):
-    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
-    created = models.DateTimeField(auto_now_add = True)
-    updated = models.DateTimeField(auto_now = True)
-    name = models.CharField(max_length = 200)
-    description = models.TextField(blank = True)
-    is_in_exodus = models.BooleanField(default = False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    is_in_exodus = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -35,25 +36,25 @@ class Network(Category):
 
 
 class Tracker(models.Model):
-    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
-    created = models.DateTimeField(auto_now_add = True)
-    updated = models.DateTimeField(auto_now = True)
-    name = models.CharField(max_length = 200)
-    description = models.TextField(blank = True)
-    short_description = models.TextField(blank = True)
-    creation_date = models.DateField(auto_now_add = True)
-    code_signature = models.CharField(max_length = 500, default = '', blank=True)
-    network_signature = models.CharField(max_length = 500, default = '', blank=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    short_description = models.TextField(blank=True)
+    creation_date = models.DateField(auto_now_add=True)
+    code_signature = models.CharField(max_length=500, default='', blank=True)
+    network_signature = models.CharField(max_length=500, default='', blank=True)
     website = models.URLField()
     capability = models.ManyToManyField(Capability, blank=True)
     advertising = models.ManyToManyField(Advertising, blank=True)
     analytic = models.ManyToManyField(Analytic, blank=True)
     network = models.ManyToManyField(Network, blank=True)
-    is_in_exodus = models.BooleanField(default = False)
-    maven_repository = models.CharField(max_length = 500, default = '', blank=True)
-    artifact_id = models.CharField(max_length = 500, default = '', blank=True)
-    group_id = models.CharField(max_length = 500, default = '', blank=True)
-    gradle = models.CharField(max_length = 500, default = '', blank=True)
+    is_in_exodus = models.BooleanField(default=False)
+    maven_repository = models.CharField(max_length=500, default='', blank=True)
+    artifact_id = models.CharField(max_length=500, default='', blank=True)
+    group_id = models.CharField(max_length=500, default='', blank=True)
+    gradle = models.CharField(max_length=500, default='', blank=True)
 
     def __str__(self):
         return self.name
