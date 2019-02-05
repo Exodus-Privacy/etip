@@ -1,8 +1,8 @@
 from django.http.response import Http404
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import Paginator
 from django.shortcuts import render
 
-from trackers.models import *
+from trackers.models import Tracker
 
 
 def index(request):
