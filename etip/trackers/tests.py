@@ -11,7 +11,11 @@ class TrackerModelTests(TestCase):
         )
         existing_tracker.save()
 
-        new_tracker = Tracker()
+        new_tracker = Tracker(
+            name="tutu",
+            code_signature="tutu.com",
+        )
+        new_tracker.save()
         collisions = new_tracker.code_signature_collision()
         self.assertEquals(collisions, [])
 
@@ -28,6 +32,7 @@ class TrackerModelTests(TestCase):
             name="toto2",
             code_signature=signature,
         )
+        new_tracker.save()
         collisions = new_tracker.code_signature_collision()
         self.assertEquals(collisions, [existing_tracker_name])
 
@@ -44,6 +49,7 @@ class TrackerModelTests(TestCase):
             name="toto2",
             network_signature=signature,
         )
+        new_tracker.save()
         collisions = new_tracker.network_signature_collision()
         self.assertEquals(collisions, [existing_tracker_name])
 
@@ -60,6 +66,7 @@ class TrackerModelTests(TestCase):
             name="toto2",
             network_signature=signature,
         )
+        new_tracker.save()
         collisions = new_tracker.network_signature_collision()
         self.assertEquals(collisions, [existing_tracker_name])
 
@@ -76,6 +83,7 @@ class TrackerModelTests(TestCase):
             name="toto2",
             code_signature=signature,
         )
+        new_tracker.save()
         collisions = new_tracker.code_signature_collision()
         self.assertEquals(collisions, [existing_tracker_name])
 
@@ -98,6 +106,7 @@ class TrackerModelTests(TestCase):
             name="toto2",
             code_signature=signature,
         )
+        new_tracker.save()
         collisions = new_tracker.code_signature_collision()
         self.assertEquals(collisions, [existing_tracker1_name, existing_tracker2_name])
 
@@ -120,6 +129,7 @@ class TrackerModelTests(TestCase):
             name="toto2",
             network_signature=signature,
         )
+        new_tracker.save()
         collisions = new_tracker.network_signature_collision()
         self.assertEquals(collisions, [existing_tracker1_name, existing_tracker2_name])
 
