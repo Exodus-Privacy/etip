@@ -148,3 +148,44 @@ class TrackerModelTests(TestCase):
             website="toto.com",
         )
         self.assertEquals(tracker.progress(), 30)
+
+    def test_missing_fields_empty_tracker(self):
+        expected_output = [
+            'Long description',
+            'Short description',
+            'Code signature',
+            'Network signature',
+            'Website',
+            'Capabilities',
+            'Analytics',
+            'Advertising',
+            'Networks',
+            'Maven repository',
+            'Artifact ID',
+            'Group ID',
+            'Gradle',
+        ]
+
+        tracker = Tracker()
+        self.assertEquals(tracker.missing_fields(), expected_output)
+
+    def test_missing_fields_tracker_with_signatures(self):
+        expected_output = [
+            'Long description',
+            'Short description',
+            'Website',
+            'Capabilities',
+            'Analytics',
+            'Advertising',
+            'Networks',
+            'Maven repository',
+            'Artifact ID',
+            'Group ID',
+            'Gradle',
+        ]
+
+        tracker = Tracker(
+            code_signature="toto",
+            network_signature="toto",
+        )
+        self.assertEquals(tracker.missing_fields(), expected_output)
