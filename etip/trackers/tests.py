@@ -52,7 +52,7 @@ class TrackerModelTests(TestCase):
         signature = "toto.com"
         existing_tracker = Tracker(
             name=existing_tracker_name,
-            network_signature=signature+'/test',
+            network_signature=signature + '/test',
         )
         existing_tracker.save()
 
@@ -68,7 +68,7 @@ class TrackerModelTests(TestCase):
         signature = "toto.com"
         existing_tracker = Tracker(
             name=existing_tracker_name,
-            code_signature=signature+'/test',
+            code_signature=signature + '/test',
         )
         existing_tracker.save()
 
@@ -90,7 +90,7 @@ class TrackerModelTests(TestCase):
         existing_tracker1.save()
         existing_tracker2 = Tracker(
             name=existing_tracker2_name,
-            code_signature=signature+'/test',
+            code_signature=signature + '/test',
         )
         existing_tracker2.save()
 
@@ -112,7 +112,7 @@ class TrackerModelTests(TestCase):
         existing_tracker1.save()
         existing_tracker2 = Tracker(
             name=existing_tracker2_name,
-            network_signature=signature+'/test',
+            network_signature=signature + '/test',
         )
         existing_tracker2.save()
 
@@ -122,3 +122,29 @@ class TrackerModelTests(TestCase):
         )
         collisions = new_tracker.network_signature_collision()
         self.assertEquals(collisions, [existing_tracker1_name, existing_tracker2_name])
+
+    def test_progress_empty_tracker(self):
+        tracker = Tracker()
+        self.assertEquals(tracker.progress(), 0)
+
+    def test_progress_tracker_with_signatures(self):
+        tracker = Tracker(
+            code_signature="toto",
+            network_signature="toto",
+        )
+        self.assertEquals(tracker.progress(), 20)
+
+    def test_progress_tracker_with_short_signatures(self):
+        tracker = Tracker(
+            code_signature="tot",
+            network_signature="tot",
+        )
+        self.assertEquals(tracker.progress(), 0)
+
+    def test_progress_tracker_with_signatures_and_website(self):
+        tracker = Tracker(
+            code_signature="toto",
+            network_signature="toto",
+            website="toto.com",
+        )
+        self.assertEquals(tracker.progress(), 30)
