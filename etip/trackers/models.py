@@ -36,6 +36,11 @@ class Network(Category):
 
 
 class Tracker(models.Model):
+    MIN_SIGNATURE_SIZE = 4
+    MIN_DESCRIPTION_SIZE = 180
+    MIN_SHORT_DESCRIPTION_SIZE = 180
+    MIN_WEBSITE_SIZE = 3
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -61,33 +66,33 @@ class Tracker(models.Model):
 
     def code_signature_collision(self):
         collisions = []
-        signatures = Tracker.objects.all()
-        for t in signatures:
-            if re.search(self.code_signature, t.code_signature) and len(self.code_signature) > 4:
-                if self.id != t.id:
-                    collisions.append(t.name)
+        trackers = Tracker.objects.all().exclude(id=self.id)
+        for t in trackers:
+            if re.search(self.code_signature, t.code_signature) \
+                    and len(self.code_signature) > self.MIN_SIGNATURE_SIZE:
+                collisions.append(t.name)
         return collisions
 
     def network_signature_collision(self):
         collisions = []
-        signatures = Tracker.objects.all()
-        for t in signatures:
-            if re.search(self.network_signature, t.network_signature) and len(self.network_signature) > 4:
-                if self.id != t.id:
-                    collisions.append(t.name)
+        trackers = Tracker.objects.all().exclude(id=self.id)
+        for t in trackers:
+            if re.search(self.network_signature, t.network_signature) \
+                    and len(self.network_signature) > self.MIN_SIGNATURE_SIZE:
+                collisions.append(t.name)
         return collisions
 
     def progress(self):
         p = 0
-        if len(self.description) > 180:
+        if len(self.description) >= self.MIN_DESCRIPTION_SIZE:
             p += 15
-        if len(self.short_description) > 25:
+        if len(self.short_description) >= self.MIN_DESCRIPTION_SIZE:
             p += 15
-        if len(self.code_signature) > 3:
+        if len(self.code_signature) >= self.MIN_SIGNATURE_SIZE:
             p += 10
-        if len(self.network_signature) > 3:
+        if len(self.network_signature) >= self.MIN_SIGNATURE_SIZE:
             p += 10
-        if len(self.website) > 2:
+        if len(self.website) >= self.MIN_WEBSITE_SIZE:
             p += 10
         if self.capability.count() > 0:
             p += 10
@@ -109,23 +114,23 @@ class Tracker(models.Model):
 
     def missing_fields(self):
         missing = []
-        if len(self.description) < 180:
+        if len(self.description) < self.MIN_DESCRIPTION_SIZE:
             missing.append('Long description')
-        if len(self.short_description) < 25:
+        if len(self.short_description) < self.MIN_DESCRIPTION_SIZE:
             missing.append('Short description')
-        if len(self.code_signature) <= 3:
+        if len(self.code_signature) < self.MIN_SIGNATURE_SIZE:
             missing.append('Code signature')
-        if len(self.network_signature) <= 3:
+        if len(self.network_signature) < self.MIN_SIGNATURE_SIZE:
             missing.append('Network signature')
-        if len(self.website) < 3:
+        if len(self.website) < self.MIN_WEBSITE_SIZE:
             missing.append('Website')
-        if self.capability.count() < 1:
+        if self.capability.count() == 0:
             missing.append('Capabilities')
-        if self.analytic.count() < 1:
+        if self.analytic.count() == 0:
             missing.append('Analytics')
-        if self.advertising.count() < 1:
+        if self.advertising.count() == 0:
             missing.append('Advertising')
-        if self.network.count() < 1:
+        if self.network.count() == 0:
             missing.append('Networks')
         if not self.maven_repository:
             missing.append('Maven repository')
