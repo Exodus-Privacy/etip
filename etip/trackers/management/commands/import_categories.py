@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from trackers.models import *
+from trackers.models import Capability, Advertising, Analytic, Network
 
 
 class Command(BaseCommand):
@@ -19,7 +19,8 @@ class Command(BaseCommand):
         m.save()
         m = Capability(name='Tracks users using NFC')
         m.save()
-        m = Capability(name='Targets user location and proximity via geofencing')
+        m = Capability(
+            name='Targets user location and proximity via geofencing')
         m.save()
         m = Capability(name='Targets users via geotargeting')
         m.save()
@@ -35,13 +36,15 @@ class Command(BaseCommand):
         m = Advertising(name='Timed advertisements')
         m.save()
         m = Advertising(
-            name='Targets across devices, channels and/or platforms (omni-channel marketing, customer journey)')
+            name='Targets across devices, channels and/or platforms \
+            (omni-channel marketing, customer journey)')
         m.save()
         m = Advertising(name='Bidding services')
         m.save()
         m = Advertising(name='Location-based ad pushing')
         m.save()
-        m = Advertising(name='Alters app functionality based upon user profiles')
+        m = Advertising(
+            name='Alters app functionality based upon user profiles')
         m.save()
 
         m = Analytic(name='Offers analytics activity to app developers')
@@ -52,9 +55,12 @@ class Command(BaseCommand):
         m.save()
         m = Analytic(name='Collects Sensitive Personal Information (SPI)')
         m.save()
-        m = Analytic(name='Profiles users via Personally Identifiable Information (PII)')
+        m = Analytic(
+            name='Profiles users via Personally Identifiable Information \
+            (PII)')
         m.save()
-        m = Analytic(name='Profiles users via Sensitive Personal Information (SPI)')
+        m = Analytic(
+            name='Profiles users via Sensitive Personal Information (SPI)')
         m.save()
         m = Analytic(name='Performs cross-device identification')
         m.save()
@@ -62,11 +68,13 @@ class Command(BaseCommand):
         m.save()
         m = Analytic(name='Identifies users via iOS ID (IDFA)')
         m.save()
-        m = Analytic(name='Identifies users via network ID (hostname/ISP/SSID)')
+        m = Analytic(
+            name='Identifies users via network ID (hostname/ISP/SSID)')
         m.save()
         m = Analytic(name='Stores facial recognition data')
         m.save()
-        m = Analytic(name='Stores personal profile data (name, address, phone)')
+        m = Analytic(
+            name='Stores personal profile data (name, address, phone)')
         m.save()
         m = Analytic(name='Analytics AI and machine learning')
         m.save()
