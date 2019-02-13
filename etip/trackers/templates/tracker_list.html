@@ -5,7 +5,7 @@
         {% if trackers %}
             <div class="alert bg-light">
                 <div class="alert-heading">
-                    <h4><span class="badge badge-info">{{ trackers.count }}</span> tracker{{ trackers.count|pluralize }}</h4>
+                    <h4><span class="badge badge-info">{{ count }}</span> tracker{{ count|pluralize }}</h4>
                 </div>
                 <table class="table table-hover table-responsive">
                     <thead class="">
@@ -44,7 +44,8 @@
                                 <td><input type="checkbox" disabled="disabled" checked="{{ tracker.is_in_exodus }}"/></td>
                                 <td><a href="{{ tracker.website }}">www</a></td>
                                 <td>{{ tracker.short_description }}</td>
-                                <td><code>{{ tracker.code_signature|truncatechars:24 }}</code>
+                                <td>
+                                    <code>{{ tracker.code_signature|truncatechars:24 }}</code>
                                     {% if tracker.code_signature_collision %}
                                         <div class="alert alert-warning">
                                             <strong>⚠️</strong> collision detected with:
@@ -58,7 +59,8 @@
                                     {% endif %}
 
                                 </td>
-                                <td><code>{{ tracker.network_signature|truncatechars:24 }}</code>
+                                <td>
+                                    <code>{{ tracker.network_signature|truncatechars:24 }}</code>
                                     {% if tracker.network_signature_collision %}
                                         <div class="alert alert-warning">
                                             <strong>⚠️</strong> collision detected with:
