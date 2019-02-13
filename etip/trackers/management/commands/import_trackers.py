@@ -5,6 +5,17 @@ from django.core.management.base import BaseCommand, CommandError
 from trackers.models import Tracker
 
 
+def read_file(filename):
+    if filename.find('://') > 0:
+        import urllib.request
+
+        file = urllib.request.urlopen(filename)
+    else:
+        file = open(filename, 'r')
+
+    return file.read()
+
+
 class Command(BaseCommand):
     help = 'Import trackers from exodus'
 
@@ -16,14 +27,14 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        if Tracker.objects.all()[:1].count() > 0:
-            raise CommandError('Your trackers table in not empty, \
-            please truncate its before the import')
+        if Tracker.objects.all().count() > 0:
+            raise CommandError('Your trackers table in not empty, '
+                               'please truncate it before the import')
 
-        json_str = self.read_file(options['filename']).decode('utf-8')
+        json_str = read_file(options['filename']).decode('utf-8')
         trackers = json.loads(json_str)
 
-        for id, tracker in trackers['trackers'].items():
+        for _, tracker in trackers['trackers'].items():
             model = Tracker(
                 name=tracker['name'],
                 description=tracker['description'],
@@ -37,13 +48,3 @@ class Command(BaseCommand):
             model.save()
 
             print('%s saved' % model.name)
-
-    def read_file(self, filename):
-        if filename.find('://') > 0:
-            import urllib.request
-
-            file = urllib.request.urlopen(filename)
-        else:
-            file = open(filename, 'r')
-
-        return file.read()
