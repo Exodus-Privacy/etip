@@ -108,7 +108,8 @@ class TrackerModelTests(TestCase):
         )
         new_tracker.save()
         collisions = new_tracker.code_signature_collision()
-        self.assertEquals(collisions, [existing_tracker1_name, existing_tracker2_name])
+        self.assertEquals(
+            collisions, [existing_tracker1_name, existing_tracker2_name])
 
     def test_network_collision_multiple_matches(self):
         signature = "toto.com"
@@ -131,7 +132,8 @@ class TrackerModelTests(TestCase):
         )
         new_tracker.save()
         collisions = new_tracker.network_signature_collision()
-        self.assertEquals(collisions, [existing_tracker1_name, existing_tracker2_name])
+        self.assertEquals(
+            collisions, [existing_tracker1_name, existing_tracker2_name])
 
     def test_progress_empty_tracker(self):
         tracker = Tracker()
