@@ -41,7 +41,7 @@
                                       </div>
                                     </div>
                                 </td>
-                                <td><input type="checkbox" disabled="disabled" checked="{{ tracker.is_in_exodus }}"/></td>
+                                <td><input type="checkbox" disabled="disabled" {% if tracker.is_in_exodus %}checked{% endif %}/></td>
                                 <td><a href="{{ tracker.website }}">www</a></td>
                                 <td>{{ tracker.short_description }}</td>
                                 <td>
