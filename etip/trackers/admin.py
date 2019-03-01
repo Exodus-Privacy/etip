@@ -6,7 +6,10 @@ from trackers.models import Tracker, Capability, Advertising, Analytic, Network
 
 @admin.register(Tracker)
 class TrackerModelAdmin(VersionAdmin):
-    pass
+    date_hierarchy = 'created'
+    search_fields = ['name']
+    list_display = ('name', 'code_signature', 'is_in_exodus')
+    list_filter = ('is_in_exodus',)
 
 
 @admin.register(Capability)
