@@ -1,5 +1,6 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from .models import Tracker
+from io import BytesIO
 
 
 class TrackerModelTests(TestCase):
@@ -201,3 +202,54 @@ class TrackerModelTests(TestCase):
             network_signature="toto",
         )
         self.assertEquals(tracker.missing_fields(), expected_output)
+
+
+class ExportTrackerListViewTests(TestCase):
+    def test_without_trackers(self):
+        c = Client()
+        response = c.get('/trackers/export')
+        self.assertEquals(response.status_code, 200)
+        self.assertJSONEqual(response.content, {'trackers': []})
+
+    def test_with_trackers(self):
+        tracker_1 = Tracker(
+            name='tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1'
+        )
+
+        tracker_2 = Tracker(
+            name='tracker_2',
+            code_signature='code_2',
+            network_signature='network_2',
+            website='https://website2',
+            description='description du tracker_2'
+        )
+
+        tracker_1.save()
+        tracker_2.save()
+
+        c = Client()
+        response = c.get('/trackers/export')
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.get('Content-Disposition'),
+                          'attachment; filename=trackers.json')
+        f = BytesIO(response.content)
+        expected_json = {
+            'trackers': [
+                {
+                    'name': tracker_1.name,
+                    'code_signature': tracker_1.code_signature,
+                    'network_signature': tracker_1.network_signature,
+                    'website': tracker_1.website
+                },
+                {
+                    'name': tracker_2.name,
+                    'code_signature': tracker_2.code_signature,
+                    'network_signature': tracker_2.network_signature,
+                    'website': tracker_2.website
+                }
+            ]
+        }
+        self.assertJSONEqual(f.getvalue(), expected_json)

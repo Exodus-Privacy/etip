@@ -40,6 +40,9 @@ class Tracker(models.Model):
     MIN_DESCRIPTION_SIZE = 180
     MIN_SHORT_DESCRIPTION_SIZE = 180
     MIN_WEBSITE_SIZE = 3
+    EXPORTABLE_FIELDS = [
+        'name', 'code_signature', 'network_signature', 'website'
+    ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created = models.DateTimeField(auto_now_add=True)

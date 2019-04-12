@@ -6,6 +6,7 @@
             <div class="alert bg-light">
                 <div class="alert-heading">
                     <h4><span class="badge badge-info">{{ count }}</span> tracker{{ count|pluralize }}</h4>
+                    <a href="{%url 'trackers:export'%}">Export as JSON</a>
                 </div>
                 <table class="table table-hover table-responsive">
                     <thead class="">

@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.http.response import Http404
 from django.core.paginator import Paginator
 from django.shortcuts import render
@@ -20,3 +21,11 @@ def index(request):
         'trackers': trackers,
         'count': count
     })
+
+
+def export_tracker_list(request):
+    trackers = Tracker.objects.order_by('name')
+    trackers_list = list(trackers.values(*Tracker.EXPORTABLE_FIELDS))
+    response = JsonResponse(dict(trackers=trackers_list))
+    response['Content-Disposition'] = 'attachment; filename=trackers.json'
+    return response
