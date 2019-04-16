@@ -204,6 +204,56 @@ class TrackerModelTests(TestCase):
         self.assertEquals(tracker.missing_fields(), expected_output)
 
 
+class IndexTrackerListViewTests(TestCase):
+    def test_with_trackers(self):
+        tracker_1 = Tracker(
+            name='name_tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1'
+        )
+        tracker_2 = Tracker(
+            name='random name',
+            code_signature='code_2',
+            network_signature='network_2',
+            website='https://website2',
+        )
+
+        tracker_1.save()
+        tracker_2.save()
+
+        c = Client()
+        response = c.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, tracker_1.name, 1)
+        self.assertContains(response, tracker_2.name, 1)
+        self.assertEqual(response.context['count'], 2)
+
+    def test_with_search_query_with_results(self):
+        tracker_1 = Tracker(
+            name='name_tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1'
+        )
+        tracker_2 = Tracker(
+            name='random name',
+            code_signature='tracker_code_2',
+            network_signature='network_2',
+            website='https://website2',
+        )
+
+        tracker_1.save()
+        tracker_2.save()
+
+        c = Client()
+        response = c.get('/', {'q': 'tracker'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, tracker_1.name, 1)
+        self.assertNotContains(response, tracker_2.name)
+        self.assertEqual(response.context['count'], 1)
+
+
 class ExportTrackerListViewTests(TestCase):
     def test_without_trackers(self):
         c = Client()

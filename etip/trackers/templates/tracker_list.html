@@ -2,6 +2,14 @@
 {% block content %}
     <div class="row justify-content-md-center">
         <div class="col-lg-12">
+            <form class="form-inline" method="get">
+                <label class="sr-only" for="inlineFormTrackerName">Tracker name:</label>
+                <input type="text" class="form-control mb-2 mr-2 col-3" name="q" id="inlineFormTrackerName" placeholder="Tracker name">
+                <button type="submit" class="btn btn-primary mb-2 mr-2">Submit</button>
+                <a class="btn btn-info mb-2" href={%url 'trackers:index'%}>Clean filter</a>
+            </form>
+        </div>
+        <div class="col-lg-12">
         {% if trackers %}
             <div class="alert bg-light">
                 <div class="alert-heading">
