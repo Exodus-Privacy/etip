@@ -1,6 +1,9 @@
 from django.test import TestCase, Client
+from django.core.management import call_command
+from django.core.management.base import CommandError
 from .models import Tracker
-from io import BytesIO
+from io import BytesIO, StringIO
+from unittest.mock import patch
 
 
 class TrackerModelTests(TestCase):
@@ -321,3 +324,307 @@ class ExportTrackerListViewTests(TestCase):
             ]
         }
         self.assertJSONEqual(f.getvalue(), expected_json)
+
+
+class CompareTrackersWithExodusCommandTest(TestCase):
+
+    EXODUS_API_BASE_URL = 'https://reports.exodus-privacy.eu.org'
+    EXODUS_API_BASE_PATH = '/api/trackers'
+
+    def test_api_gets_called_correctly(self):
+        with patch('requests.get') as mocked_get:
+            mocked_get.return_value.status_code = 200
+            call_command('compare_with_exodus', stdout=StringIO())
+        mocked_get.assert_called_with(
+            self.EXODUS_API_BASE_URL + self.EXODUS_API_BASE_PATH
+        )
+
+    def test_api_gets_called_with_provided_url(self):
+        fake_url = 'https://example.com'
+        with patch('requests.get') as mocked_get:
+            mocked_get.return_value.status_code = 200
+            call_command(
+                'compare_with_exodus', stdout=StringIO(),
+                exodus_hostname=fake_url
+            )
+        mocked_get.assert_called_with(fake_url + self.EXODUS_API_BASE_PATH)
+
+    def test_raise_error_when_api_not_200(self):
+        with patch('requests.get') as mocked_get:
+            mocked_get.return_value.status_code = 404
+            with self.assertRaises(CommandError) as e:
+                call_command('compare_with_exodus', stdout=StringIO())
+        error_msg = str(e.exception)
+        self.assertEqual(error_msg, 'Unexpected status from API: 404')
+
+    def test_raise_error_when_empty_response(self):
+        with patch('requests.get') as mocked_get:
+            mocked_get.return_value.status_code = 200
+            mocked_get.return_value.json.return_value = {}
+            with self.assertRaises(CommandError) as e:
+                call_command('compare_with_exodus', stdout=StringIO())
+        error_msg = str(e.exception)
+        self.assertEqual(error_msg, 'Empty response')
+
+    def test_select_only_in_exodus_trackers(self):
+        Tracker(name="In Exodus", is_in_exodus=True).save()
+        Tracker(name="Not In Exodus", is_in_exodus=False).save()
+        with patch('requests.get') as mocked_get:
+            mocked_get.return_value.status_code = 200
+            out = StringIO()
+            call_command('compare_with_exodus', stdout=out)
+        self.assertIn('Found 1 trackers in ETIP DB', out.getvalue())
+
+    def __build_json_mock_response(self, trackers_list):
+        mocked_json = {'trackers': {}}
+        for idx, tracker in enumerate(trackers_list):
+            mocked_json['trackers'][idx + 1] = {
+                'name': tracker.name,
+                'code_signature': tracker.code_signature,
+                'network_signature': tracker.network_signature,
+                'website': tracker.website
+            }
+        return mocked_json
+
+    def __call_command(self, status_code, mocked_json, options):
+        with patch('requests.get') as mocked_get:
+            mocked_get.return_value.status_code = status_code
+            mocked_get.return_value.json.return_value = mocked_json
+            out = StringIO()
+            call_command('compare_with_exodus', stdout=out, *options)
+        return out
+
+    def test_find_1_exact_match(self):
+        tracker_1 = Tracker(
+            name='tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1',
+            is_in_exodus=True
+        )
+        tracker_1.save()
+        mocked_json = self.__build_json_mock_response([tracker_1])
+        expected_answer = (
+            "Retrieved 1 trackers from Exodus\n"
+            "Found 1 trackers in ETIP DB expected to be in Exodus\n"
+            "Starting case-sensitive lookup...\n"
+            "Lookup results:\n"
+            "** FOUND_AND_IDENTICAL: 1\n"
+            "** FOUND_BUT_DIFFERENT: 0\n"
+            "** MULTIPLE_MATCHES_FOUND_IN_ETIP: 0\n"
+            "** NOT_FOUND_IN_ETIP: 0\n"
+        )
+        out = self.__call_command(200, mocked_json, [])
+        self.assertIn(expected_answer, out.getvalue())
+
+    def test_find_1_exact_match_and_1_not_found(self):
+        tracker_1 = Tracker(
+            name='tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1',
+            is_in_exodus=True
+        )
+        tracker_2 = Tracker(
+            name='tracker_2',
+            code_signature='code_2',
+            network_signature='network_2',
+            website='https://website2',
+            description='description du tracker_2',
+            is_in_exodus=True
+        )
+        tracker_1.save()
+        mocked_json = self.__build_json_mock_response([tracker_1, tracker_2])
+        expected_answer = (
+            "Retrieved 2 trackers from Exodus\n"
+            "Found 1 trackers in ETIP DB expected to be in Exodus\n"
+            "Starting case-sensitive lookup...\n"
+            "NOT_FOUND_IN_ETIP - tracker_2\n"
+            "Lookup results:\n"
+            "** FOUND_AND_IDENTICAL: 1\n"
+            "** FOUND_BUT_DIFFERENT: 0\n"
+            "** MULTIPLE_MATCHES_FOUND_IN_ETIP: 0\n"
+            "** NOT_FOUND_IN_ETIP: 1\n"
+        )
+
+        out = self.__call_command(200, mocked_json, [])
+        self.assertIn(expected_answer, out.getvalue())
+
+    def test_find_1_different(self):
+        tracker_1 = Tracker(
+            name='tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1',
+            is_in_exodus=True
+        )
+        tracker_1.save()
+        mocked_json = self.__build_json_mock_response([tracker_1])
+        mocked_json['trackers'][1]['code_signature'] = 'another_signature'
+        expected_answer = (
+            "Retrieved 1 trackers from Exodus\n"
+            "Found 1 trackers in ETIP DB expected to be in Exodus\n"
+            "Starting case-sensitive lookup...\n"
+            "FOUND_BUT_DIFFERENT - tracker_1\n"
+            "[code_signature]\n"
+            "etip  : code_1\n"
+            "exodus: another_signature\n"
+            "Lookup results:\n"
+            "** FOUND_AND_IDENTICAL: 0\n"
+            "** FOUND_BUT_DIFFERENT: 1\n"
+            "** MULTIPLE_MATCHES_FOUND_IN_ETIP: 0\n"
+            "** NOT_FOUND_IN_ETIP: 0\n"
+        )
+        out = self.__call_command(200, mocked_json, [])
+        self.assertIn(expected_answer, out.getvalue())
+
+    def test_find_multiple_same_name(self):
+        tracker_1 = Tracker(
+            name='tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1',
+            is_in_exodus=True
+        )
+        tracker_2 = Tracker(
+            name='tracker_1',
+            code_signature='code_2',
+            network_signature='network_2',
+            website='https://website2',
+            is_in_exodus=True
+        )
+        tracker_1.save()
+        tracker_2.save()
+        mocked_json = self.__build_json_mock_response([tracker_1])
+        expected_answer = (
+            "Retrieved 1 trackers from Exodus\n"
+            "Found 2 trackers in ETIP DB expected to be in Exodus\n"
+            "Starting case-sensitive lookup...\n"
+            "MULTIPLE_MATCHES_FOUND_IN_ETIP - tracker_1\n"
+            "Lookup results:\n"
+            "** FOUND_AND_IDENTICAL: 0\n"
+            "** FOUND_BUT_DIFFERENT: 0\n"
+            "** MULTIPLE_MATCHES_FOUND_IN_ETIP: 1\n"
+            "** NOT_FOUND_IN_ETIP: 0\n"
+        )
+        out = self.__call_command(200, mocked_json, [])
+        self.assertIn(expected_answer, out.getvalue())
+
+    def test_find_multiple_same_code_signature(self):
+        tracker_1 = Tracker(
+            name='tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1',
+            is_in_exodus=True
+        )
+        tracker_2 = Tracker(
+            name='tracker_2',
+            code_signature='code_1',
+            network_signature='network_2',
+            website='https://website2',
+            is_in_exodus=True
+        )
+        tracker_1.save()
+        tracker_2.save()
+        mocked_json = self.__build_json_mock_response([tracker_1])
+        expected_answer = (
+            "Retrieved 1 trackers from Exodus\n"
+            "Found 2 trackers in ETIP DB expected to be in Exodus\n"
+            "Starting case-sensitive lookup...\n"
+            "MULTIPLE_MATCHES_FOUND_IN_ETIP - tracker_1\n"
+            "Lookup results:\n"
+            "** FOUND_AND_IDENTICAL: 0\n"
+            "** FOUND_BUT_DIFFERENT: 0\n"
+            "** MULTIPLE_MATCHES_FOUND_IN_ETIP: 1\n"
+            "** NOT_FOUND_IN_ETIP: 0\n"
+        )
+        out = self.__call_command(200, mocked_json, [])
+        self.assertIn(expected_answer, out.getvalue())
+
+    def test_find_one_of_each(self):
+        tracker_1 = Tracker(
+            name='tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1',
+            is_in_exodus=True
+        )
+        tracker_2 = Tracker(
+            name='tracker_2',
+            code_signature='code_2',
+            network_signature='network_2',
+            website='https://website2',
+            is_in_exodus=True
+        )
+        tracker_3 = Tracker(
+            name='tracker_3',
+            code_signature='code_3',
+            network_signature='network_3',
+            website='https://website3',
+            is_in_exodus=True
+        )
+        tracker_3bis = Tracker(
+            name='tracker_3',
+            code_signature='code_3',
+            network_signature='network_3',
+            website='https://website3',
+            is_in_exodus=True
+        )
+        tracker_4 = Tracker(
+            name='tracker_4',
+            code_signature='code_4',
+            network_signature='network_4',
+            website='https://website4',
+            is_in_exodus=True
+        )
+        tracker_1.save()
+        tracker_2.save()
+        tracker_3.save()
+        tracker_3bis.save()
+        mocked_json = self.__build_json_mock_response([
+            tracker_1, tracker_2, tracker_3, tracker_4
+        ])
+        mocked_json['trackers'][2]['website'] = 'another_website'
+        expected_answer = (
+            "Retrieved 4 trackers from Exodus\n"
+            "Found 4 trackers in ETIP DB expected to be in Exodus\n"
+            "Starting case-sensitive lookup...\n"
+            "FOUND_BUT_DIFFERENT - tracker_2\n"
+            "[website]\n"
+            "etip  : https://website2\n"
+            "exodus: another_website\n"
+            "MULTIPLE_MATCHES_FOUND_IN_ETIP - tracker_3\n"
+            "NOT_FOUND_IN_ETIP - tracker_4\n"
+            "Lookup results:\n"
+            "** FOUND_AND_IDENTICAL: 1\n"
+            "** FOUND_BUT_DIFFERENT: 1\n"
+            "** MULTIPLE_MATCHES_FOUND_IN_ETIP: 1\n"
+            "** NOT_FOUND_IN_ETIP: 1\n"
+        )
+        out = self.__call_command(200, mocked_json, [])
+        self.assertIn(expected_answer, out.getvalue())
+
+    def test_1_different_in_quiet_mode(self):
+        tracker_1 = Tracker(
+            name='tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1',
+            is_in_exodus=True
+        )
+        tracker_1.save()
+        mocked_json = self.__build_json_mock_response([tracker_1])
+        mocked_json['trackers'][1]['code_signature'] = 'another_signature'
+        expected_answer = (
+            "Retrieved 1 trackers from Exodus\n"
+            "Found 1 trackers in ETIP DB expected to be in Exodus\n"
+            "Starting case-sensitive lookup...\n"
+            "Lookup results:\n"
+            "** FOUND_AND_IDENTICAL: 0\n"
+            "** FOUND_BUT_DIFFERENT: 1\n"
+            "** MULTIPLE_MATCHES_FOUND_IN_ETIP: 0\n"
+            "** NOT_FOUND_IN_ETIP: 0\n"
+        )
+        out = self.__call_command(200, mocked_json, ['-q'])
+        self.assertIn(expected_answer, out.getvalue())
