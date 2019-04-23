@@ -231,7 +231,7 @@ class IndexTrackerListViewTests(TestCase):
 
     def test_with_search_query_with_results(self):
         tracker_1 = Tracker(
-            name='name_tracker_1',
+            name='match_name_tracker_1',
             code_signature='code_1',
             network_signature='network_1',
             website='https://website1'
@@ -247,11 +247,29 @@ class IndexTrackerListViewTests(TestCase):
         tracker_2.save()
 
         c = Client()
-        response = c.get('/', {'q': 'tracker'})
+        response = c.get('/', {'tracker_name': 'match'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, tracker_1.name, 1)
         self.assertNotContains(response, tracker_2.name)
         self.assertEqual(response.context['count'], 1)
+
+    def test_with_results_and_paginate(self):
+        for i in range(0, 25):
+            Tracker(
+                name='AcTracker_name'
+            ).save()
+
+        for i in range(0, 10):
+            Tracker(
+                name='AbTracker_name'
+            ).save()
+
+        c = Client()
+        response = c.get('/', {'tracker_name': 'Ac', 'page': 2})
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Ab')
+        self.assertEqual(response.context['count'], 25)
+        self.assertEqual(len(response.context['trackers']), 5)
 
 
 class ExportTrackerListViewTests(TestCase):
