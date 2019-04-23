@@ -8,14 +8,15 @@ from trackers.models import Tracker
 
 def index(request):
     try:
-        filter_param = request.GET.get('q', None)
-        if filter_param is not None:
-            trackers = Tracker.objects.filter(name__contains=filter_param)
+        filter_name = request.GET.get('tracker_name', '')
+        if filter_name:
+            trackers = Tracker.objects.filter(name__startswith=filter_name)
         else:
             trackers = Tracker.objects
 
         trackers = trackers.order_by('name')
         count = trackers.count()
+
         paginator = Paginator(trackers, 20)
         page = request.GET.get('page', 1)
         trackers = paginator.page(page)
@@ -24,7 +25,8 @@ def index(request):
 
     return render(request, 'tracker_list.html', {
         'trackers': trackers,
-        'count': count
+        'count': count,
+        'filter_name': filter_name
     })
 
 
