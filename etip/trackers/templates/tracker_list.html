@@ -1,6 +1,15 @@
 {% extends "base.html"%}
+{% load url_replace %}
 {% block content %}
     <div class="row justify-content-md-center">
+        <div class="col-lg-12">
+            <form class="form-inline" method="get">
+                <label class="sr-only" for="inlineFormTrackerName">Tracker name:</label>
+                <input type="text" class="form-control mb-2 mr-2 col-3" value="{{ filter_name }}" name="tracker_name" id="inlineFormTrackerName" placeholder="Tracker name">
+                <button type="submit" class="btn btn-primary mb-2 mr-2">Submit</button>
+                <a class="btn btn-info mb-2" href={%url 'trackers:index'%}>Clear filter</a>
+            </form>
+        </div>
         <div class="col-lg-12">
         {% if trackers %}
             <div class="alert bg-light">
@@ -111,8 +120,8 @@
                 <div>
                     <ul class="pagination pagination-sm justify-content-center">
                         {% if trackers.has_previous %}
-                        <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
-                        <li class="page-item"><a class="page-link" href="?page={{ trackers.previous_page_number }}">Previous</a></li>
+                        <li class="page-item"><a class="page-link" href="?{% url_replace 'page' 1 %}">First</a></li>
+                        <li class="page-item"><a class="page-link" href="?{% url_replace 'page' trackers.previous_page_number %}">Previous</a></li>
                         {% else %}
                         <li class="page-item disabled"><a class="page-link" href="#">First</a></li>
                         <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
@@ -120,15 +129,15 @@
                         {% for i in trackers.paginator.page_range %}
                             {% if i > trackers.number|add:'-5' and i < trackers.number|add:'5' %}
                                 {% if i == trackers.number %}
-                                <li class="page-item active"> <a class="page-link" href="?page={{ i }}">{{ i }}</a> </li>
+                                <li class="page-item active"> <a class="page-link" href="?{% url_replace 'page' i %}">{{ i }}</a> </li>
                                 {% else %}
-                                <li class="page-item"> <a class="page-link" href="?page={{ i }}">{{ i }}</a> </li>
+                                <li class="page-item"> <a class="page-link" href="?{% url_replace 'page' i %}">{{ i }}</a> </li>
                                 {% endif %}
                             {% endif %}
                         {% endfor %}
                         {% if trackers.has_next %}
-                        <li class="page-item"><a class="page-link" href="?page={{ trackers.next_page_number }}">&nbsp&nbspNext&nbsp&nbsp</a></li>
-                        <li class="page-item"><a class="page-link" href="?page={{ trackers.paginator.num_pages }}">Last&nbsp</a></li>
+                        <li class="page-item"><a class="page-link" href="?{% url_replace 'page' trackers.next_page_number %}">&nbsp&nbspNext&nbsp&nbsp</a></li>
+                        <li class="page-item"><a class="page-link" href="?{% url_replace 'page' trackers.paginator.num_pages %}">Last&nbsp</a></li>
                         {% else %}
                         <li class="page-item disabled"><a class="page-link" href="#">&nbsp&nbspNext&nbsp&nbsp</a></li>
                         <li class="page-item disabled"><a class="page-link" href="">Last&nbsp</a></li>
