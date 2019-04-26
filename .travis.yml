@@ -1,0 +1,15 @@
+language: python
+
+python:
+  - "3.5"
+  - "3.6"
+
+env:
+  - DJANGO_SETTINGS_MODULE=etip.settings.dev
+
+install:
+  - pip install -r requirements.txt
+
+script:
+  - cd etip
+  - python manage.py test
