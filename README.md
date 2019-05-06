@@ -43,6 +43,13 @@ Create admin user
 python manage.py createsuperuser
 ```
 
+### Run the tests
+
+```commandline
+export DJANGO_SETTINGS_MODULE=etip.settings.dev
+python manage.py test
+```
+
 ### Start the server
 
 ```commandline
