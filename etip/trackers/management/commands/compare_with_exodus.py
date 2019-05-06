@@ -23,6 +23,7 @@ FOUND_AND_IDENTICAL = 'FOUND_AND_IDENTICAL'
 FOUND_BUT_DIFFERENT = 'FOUND_BUT_DIFFERENT'
 MULTIPLE_FOUND = 'MULTIPLE_MATCHES_FOUND_IN_ETIP'
 NOT_FOUND = 'NOT_FOUND_IN_ETIP'
+TYPES = [FOUND_AND_IDENTICAL, FOUND_BUT_DIFFERENT, MULTIPLE_FOUND, NOT_FOUND]
 
 
 class Command(BaseCommand):
@@ -109,18 +110,14 @@ class Command(BaseCommand):
             return FOUND_BUT_DIFFERENT
 
     def lookup_trackers(self, exodus_trackers, is_quiet):
-        result_counters = {
-            FOUND_AND_IDENTICAL: 0,
-            FOUND_BUT_DIFFERENT: 0,
-            MULTIPLE_FOUND: 0,
-            NOT_FOUND: 0
-        }
+        result_counters = {t: 0 for t in TYPES}
+
         self.stdout.write('Starting case-sensitive lookup...')
         for id, tracker_details in exodus_trackers.items():
             lookup_result = self.find_etip_tracker(tracker_details, is_quiet)
             result_counters[lookup_result] += 1
         self.stdout.write('Lookup results:')
-        for type in result_counters:
+        for type in TYPES:
             self.stdout.write('** {}: {}'.format(type, result_counters[type]))
 
     def get_all_from_exodus(self, exodus_base_url):
