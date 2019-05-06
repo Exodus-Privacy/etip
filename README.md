@@ -1,4 +1,4 @@
-# ETIP - εxodus tracker investigation platform [![Build Status](https://travis-ci.org/Exodus-Privacy/etip.svg?branch=v1)](https://travis-ci.org/Exodus-Privacy/etip)
+# ETIP - εxodus tracker investigation platform [![Build Status](https://travis-ci.org/Exodus-Privacy/etip.svg?branch=master)](https://travis-ci.org/Exodus-Privacy/etip)
 
 ETIP is meant to ease investigations on tracker detection. For the moment, it offers few functionalities:
 * track all modifications on trackers
