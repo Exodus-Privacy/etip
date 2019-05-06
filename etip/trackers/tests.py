@@ -280,7 +280,7 @@ class ExportTrackerListViewTests(TestCase):
         c = Client()
         response = c.get('/trackers/export')
         self.assertEquals(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'trackers': []})
+        self.assertJSONEqual(response.content.decode('utf-8'), {'trackers': []})
 
     def test_with_trackers(self):
         tracker_1 = Tracker(
@@ -323,7 +323,7 @@ class ExportTrackerListViewTests(TestCase):
                 }
             ]
         }
-        self.assertJSONEqual(f.getvalue(), expected_json)
+        self.assertJSONEqual(f.getvalue().decode('utf-8'), expected_json)
 
 
 class CompareTrackersWithExodusCommandTest(TestCase):
