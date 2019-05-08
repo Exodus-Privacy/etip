@@ -35,10 +35,13 @@ class Network(Category):
     pass
 
 
+class TrackerCategory(Category):
+    pass
+
+
 class Tracker(models.Model):
     MIN_SIGNATURE_SIZE = 4
     MIN_DESCRIPTION_SIZE = 180
-    MIN_SHORT_DESCRIPTION_SIZE = 180
     MIN_WEBSITE_SIZE = 3
     EXPORTABLE_FIELDS = [
         'name', 'code_signature', 'network_signature', 'website'
@@ -49,20 +52,21 @@ class Tracker(models.Model):
     updated = models.DateTimeField(auto_now=True)
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    short_description = models.TextField(blank=True)
     creation_date = models.DateField(auto_now_add=True)
     code_signature = models.CharField(max_length=500, default='', blank=True)
     network_signature = models.CharField(max_length=500, default='', blank=True)
     website = models.URLField()
+    category = models.ManyToManyField(TrackerCategory, blank=True)
+    is_in_exodus = models.BooleanField(default=False)
     capability = models.ManyToManyField(Capability, blank=True)
     advertising = models.ManyToManyField(Advertising, blank=True)
     analytic = models.ManyToManyField(Analytic, blank=True)
     network = models.ManyToManyField(Network, blank=True)
-    is_in_exodus = models.BooleanField(default=False)
     maven_repository = models.CharField(max_length=500, default='', blank=True)
     artifact_id = models.CharField(max_length=500, default='', blank=True)
     group_id = models.CharField(max_length=500, default='', blank=True)
     gradle = models.CharField(max_length=500, default='', blank=True)
+    comments = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
@@ -87,9 +91,9 @@ class Tracker(models.Model):
 
     def progress(self):
         p = 0
-        if len(self.description) >= self.MIN_DESCRIPTION_SIZE:
+        if self.category.count() > 0:
             p += 15
-        if len(self.short_description) >= self.MIN_DESCRIPTION_SIZE:
+        if len(self.description) >= self.MIN_DESCRIPTION_SIZE:
             p += 15
         if len(self.code_signature) >= self.MIN_SIGNATURE_SIZE:
             p += 10
@@ -117,10 +121,10 @@ class Tracker(models.Model):
 
     def missing_fields(self):
         missing = []
+        if self.category.count() == 0:
+            missing.append('Categories')
         if len(self.description) < self.MIN_DESCRIPTION_SIZE:
             missing.append('Long description')
-        if len(self.short_description) < self.MIN_DESCRIPTION_SIZE:
-            missing.append('Short description')
         if len(self.code_signature) < self.MIN_SIGNATURE_SIZE:
             missing.append('Code signature')
         if len(self.network_signature) < self.MIN_SIGNATURE_SIZE:

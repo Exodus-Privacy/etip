@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from .models import Tracker
+from .models import Tracker, Capability, Advertising, Analytic, Network, TrackerCategory
 from io import BytesIO, StringIO
 from unittest.mock import patch
 
@@ -167,8 +167,8 @@ class TrackerModelTests(TestCase):
 
     def test_missing_fields_empty_tracker(self):
         expected_output = [
+            'Categories',
             'Long description',
-            'Short description',
             'Code signature',
             'Network signature',
             'Website',
@@ -187,8 +187,8 @@ class TrackerModelTests(TestCase):
 
     def test_missing_fields_tracker_with_signatures(self):
         expected_output = [
+            'Categories',
             'Long description',
-            'Short description',
             'Website',
             'Capabilities',
             'Analytics',
@@ -628,3 +628,42 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         )
         out = self.__call_command(200, mocked_json, ['-q'])
         self.assertIn(expected_answer, out.getvalue())
+
+
+class ImportCategoriesCommandTest(TestCase):
+
+    CMD_NAME = 'import_categories'
+
+    def test_logs_are_printed(self):
+        expected_output = (
+            "Capability categories created\n"
+            "Advertising categories created\n"
+            "Analytic categories created\n"
+            "Network categories created\n"
+            "Tracker categories created\n"
+        )
+
+        out = StringIO()
+        call_command(self.CMD_NAME, stdout=out)
+        self.assertIn(expected_output, out.getvalue())
+
+    def test_categories_are_created(self):
+        out = StringIO()
+        call_command(self.CMD_NAME, stdout=out)
+
+        self.assertEquals(Capability.objects.all().count(), 8)
+        self.assertEquals(Advertising.objects.all().count(), 9)
+        self.assertEquals(Analytic.objects.all().count(), 14)
+        self.assertEquals(Network.objects.all().count(), 9)
+        self.assertEquals(TrackerCategory.objects.all().count(), 6)
+
+    def test_categories_are_created_only_once(self):
+        out = StringIO()
+        call_command(self.CMD_NAME, stdout=out)
+        call_command(self.CMD_NAME, stdout=out)
+
+        self.assertEquals(Capability.objects.all().count(), 8)
+        self.assertEquals(Advertising.objects.all().count(), 9)
+        self.assertEquals(Analytic.objects.all().count(), 14)
+        self.assertEquals(Network.objects.all().count(), 9)
+        self.assertEquals(TrackerCategory.objects.all().count(), 6)

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from trackers.models import Capability, Advertising, Analytic, Network
+from trackers.models import Capability, Advertising, Analytic, Network, TrackerCategory
 
 
 class Command(BaseCommand):
@@ -18,9 +18,12 @@ class Command(BaseCommand):
             'Targets users via geotargeting',
         ]
 
+        existing_capabilities = Capability.objects.all()
         for name in capability_names:
-            m = Capability(name=name)
-            m.save()
+            if not existing_capabilities.filter(name=name):
+                m = Capability(name=name)
+                m.save()
+        self.stdout.write('Capability categories created')
 
         advertising_names = [
             'Loads advertisements',
@@ -34,9 +37,12 @@ class Command(BaseCommand):
             'Alters app functionality based upon user profiles',
         ]
 
+        existing_advertising = Advertising.objects.all()
         for name in advertising_names:
-            m = Advertising(name=name)
-            m.save()
+            if not existing_advertising.filter(name=name):
+                m = Advertising(name=name)
+                m.save()
+        self.stdout.write('Advertising categories created')
 
         analytic_names = [
             'Offers analytics activity to app developers',
@@ -55,9 +61,12 @@ class Command(BaseCommand):
             'Audience segmenting',
         ]
 
+        existing_analytics = Analytic.objects.all()
         for name in analytic_names:
-            m = Analytic(name=name)
-            m.save()
+            if not existing_analytics.filter(name=name):
+                m = Analytic(name=name)
+                m.save()
+        self.stdout.write('Analytic categories created')
 
         network_names = [
             'Transmits user data to multiple ad networks',
@@ -71,6 +80,25 @@ class Command(BaseCommand):
             'Transmits information to Microsoft ad network',
         ]
 
+        existing_networks = Network.objects.all()
         for name in network_names:
-            m = Network(name=name)
-            m.save()
+            if not existing_networks.filter(name=name):
+                m = Network(name=name)
+                m.save()
+        self.stdout.write('Network categories created')
+
+        category_names = [
+            'Crash reporting',
+            'Analytics',
+            'Profiling',
+            'Identification',
+            'Advertisement',
+            'Location',
+        ]
+
+        existing_categories = TrackerCategory.objects.all()
+        for name in category_names:
+            if not existing_categories.filter(name=name):
+                m = TrackerCategory(name=name)
+                m.save()
+        self.stdout.write('Tracker categories created')
