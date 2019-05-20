@@ -124,7 +124,7 @@ class Tracker(models.Model):
         if self.category.count() == 0:
             missing.append('Categories')
         if len(self.description) < self.MIN_DESCRIPTION_SIZE:
-            missing.append('Long description')
+            missing.append('Description')
         if len(self.code_signature) < self.MIN_SIGNATURE_SIZE:
             missing.append('Code signature')
         if len(self.network_signature) < self.MIN_SIGNATURE_SIZE:

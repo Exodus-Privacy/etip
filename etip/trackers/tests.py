@@ -168,7 +168,7 @@ class TrackerModelTests(TestCase):
     def test_missing_fields_empty_tracker(self):
         expected_output = [
             'Categories',
-            'Long description',
+            'Description',
             'Code signature',
             'Network signature',
             'Website',
@@ -188,7 +188,7 @@ class TrackerModelTests(TestCase):
     def test_missing_fields_tracker_with_signatures(self):
         expected_output = [
             'Categories',
-            'Long description',
+            'Description',
             'Website',
             'Capabilities',
             'Analytics',

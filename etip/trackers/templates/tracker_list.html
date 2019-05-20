@@ -23,13 +23,9 @@
                             <td scope="col">Name</td>
                             <td scope="col">In εxodus</td>
                             <td scope="col">Website</td>
-                            <td scope="col">Short description</td>
+                            <td scope="col">Category</td>
                             <td scope="col">Code signature</td>
                             <td scope="col">Network signature</td>
-                            <td scope="col">Capabilities</td>
-                            <td scope="col">Advertising</td>
-                            <td scope="col">Analytic</td>
-                            <td scope="col">Network</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,15 +49,19 @@
                                 </td>
                                 <td><input type="checkbox" disabled="disabled" {% if tracker.is_in_exodus %}checked{% endif %}/></td>
                                 <td><a href="{{ tracker.website }}">www</a></td>
-                                <td>{{ tracker.short_description }}</td>
                                 <td>
-                                    <code>{{ tracker.code_signature|truncatechars:24 }}</code>
+                                    {% for c in tracker.category.all %}
+                                        <span class="badge badge-primary">{{ c.name }}</span>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    <code>{{ tracker.code_signature|truncatechars:36 }}</code>
                                     {% if tracker.code_signature_collision %}
                                         <div class="alert alert-warning">
                                             <strong>⚠️</strong> collision detected with:
                                             <ul>
                                                 {% for c in tracker.code_signature_collision %}
-                                                    <li>{{c}}</li>
+                                                    <li>{{ c }}</li>
                                                 {% endfor %}
                                             </ul>
 
@@ -70,47 +70,18 @@
 
                                 </td>
                                 <td>
-                                    <code>{{ tracker.network_signature|truncatechars:24 }}</code>
+                                    <code>{{ tracker.network_signature|truncatechars:36 }}</code>
                                     {% if tracker.network_signature_collision %}
                                         <div class="alert alert-warning">
                                             <strong>⚠️</strong> collision detected with:
                                             <ul>
                                                 {% for c in tracker.network_signature_collision %}
-                                                    <li>{{c}}</li>
+                                                    <li>{{ c }}</li>
                                                 {% endfor %}
                                             </ul>
 
                                         </div>
                                     {% endif %}
-
-                                </td>
-                                <td>
-                                    <ul>
-                                        {% for c in tracker.capability.all %}
-                                            <li>{{c.name}}</li>
-                                        {% endfor %}
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        {% for c in tracker.advertising.all %}
-                                            <li>{{c.name}}</li>
-                                        {% endfor %}
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        {% for c in tracker.analytic.all %}
-                                            <li>{{c.name}}</li>
-                                        {% endfor %}
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        {% for c in tracker.network.all %}
-                                            <li>{{c.name}}</li>
-                                        {% endfor %}
-                                    </ul>
                                 </td>
                             </tr>
                         {% endfor %}
