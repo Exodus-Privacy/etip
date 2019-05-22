@@ -1,7 +1,7 @@
 from reversion.admin import VersionAdmin
 from django.contrib import admin
 
-from trackers.models import Tracker, Capability, Advertising, Analytic, Network
+from trackers.models import Tracker, Capability, Advertising, Analytic, Network, TrackerCategory
 
 
 @admin.register(Tracker)
@@ -29,4 +29,9 @@ class AnalyticModelAdmin(VersionAdmin):
 
 @admin.register(Network)
 class NetworkModelAdmin(VersionAdmin):
+    pass
+
+
+@admin.register(TrackerCategory)
+class TrackerCategoryModelAdmin(VersionAdmin):
     pass
