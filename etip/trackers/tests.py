@@ -1,12 +1,46 @@
 from django.test import TestCase, Client
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from django.core.exceptions import ValidationError
 from .models import Tracker, Capability, Advertising, Analytic, Network, TrackerCategory
 from io import BytesIO, StringIO
 from unittest.mock import patch
 
 
 class TrackerModelTests(TestCase):
+
+    def test_clean_fields_with_incorrect_code_signature(self):
+        tracker = Tracker(
+            name="tracker1",
+            website="http://example.com",
+            code_signature="*com.tracker.code"
+        )
+
+        with self.assertRaisesRegexp(ValidationError, "Must be a valid regex"):
+            tracker.full_clean()
+
+    def test_clean_fields_without_code_signature(self):
+        tracker = Tracker(
+            name="tracker1",
+            website="http://example.com"
+        )
+
+        try:
+            tracker.full_clean()
+        except ValidationError:
+            self.fail("full_clean() raised unexpectedly")
+
+    def test_clean_fields_with_correct_code_signature(self):
+        tracker = Tracker(
+            name="tracker1",
+            website="http://example.com",
+            code_signature="com.tracker.code"
+        )
+
+        try:
+            tracker.full_clean()
+        except ValidationError:
+            self.fail("full_clean() raised unexpectedly")
 
     def test_code_collision_different_signature(self):
         existing_tracker = Tracker(

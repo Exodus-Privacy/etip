@@ -2,6 +2,7 @@ import re
 import uuid
 
 from django.db import models
+from django.core.exceptions import ValidationError
 
 
 class Category(models.Model):
@@ -70,6 +71,15 @@ class Tracker(models.Model):
 
     def __str__(self):
         return self.name
+
+    def clean_fields(self, exclude=None):
+        super().clean_fields(exclude=exclude)
+        try:
+            re.compile(self.code_signature)
+        except re.error:
+            raise ValidationError(
+                {'code_signature': "Must be a valid regex."}
+            )
 
     def code_signature_collision(self):
         collisions = []
