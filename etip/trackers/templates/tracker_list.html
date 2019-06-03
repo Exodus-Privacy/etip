@@ -6,6 +6,10 @@
             <form class="form-inline" method="get">
                 <label class="sr-only" for="inlineFormTrackerName">Tracker name:</label>
                 <input type="text" class="form-control mb-2 mr-2 col-3" value="{{ filter_name }}" name="tracker_name" id="inlineFormTrackerName" placeholder="Tracker name">
+                <div class="form-check mb-2 mr-sm-2">
+                  <input type="checkbox" class="form-check-input" id="onlyCollisionCheckbox" name="only_collisions" value="true" {{ only_collisions }}/>
+                  <label class="form-check-label" for="onlyCollisionCheckbox">Only collisions</label>
+                </div>
                 <button type="submit" class="btn btn-primary mb-2 mr-2">Submit</button>
                 <a class="btn btn-info mb-2" href={%url 'trackers:index'%}>Clear filter</a>
             </form>
