@@ -19,7 +19,7 @@ def index(request):
 
         if only_collisions:
             trackers = list(
-                t for t in trackers if t.any_signature_collision()
+                t for t in trackers if t.has_any_signature_collision()
             )
 
         count = len(trackers)

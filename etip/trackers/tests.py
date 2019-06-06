@@ -54,7 +54,7 @@ class TrackerModelTests(TestCase):
             code_signature="toto.com",
         )
         new_tracker.save()
-        self.assertEquals(new_tracker.any_signature_collision(), True)
+        self.assertEquals(new_tracker.has_any_signature_collision(), True)
 
     def test_any_signature_collision_with_network_signature_one(self):
         existing_tracker = Tracker(
@@ -68,7 +68,7 @@ class TrackerModelTests(TestCase):
             network_signature="toto.com",
         )
         new_tracker.save()
-        self.assertEquals(new_tracker.any_signature_collision(), True)
+        self.assertEquals(new_tracker.has_any_signature_collision(), True)
 
     def test_any_signature_collision_containing_network_signature_one(self):
         existing_tracker = Tracker(
@@ -82,7 +82,7 @@ class TrackerModelTests(TestCase):
             network_signature="toto.com",
         )
         new_tracker.save()
-        self.assertEquals(new_tracker.any_signature_collision(), True)
+        self.assertEquals(new_tracker.has_any_signature_collision(), True)
 
     def test_any_signature_collision_without_collisions(self):
         existing_tracker = Tracker(
@@ -98,7 +98,7 @@ class TrackerModelTests(TestCase):
             code_signature="tata.com"
         )
         new_tracker.save()
-        self.assertEquals(new_tracker.any_signature_collision(), False)
+        self.assertEquals(new_tracker.has_any_signature_collision(), False)
 
     def test_code_collision_different_signature(self):
         existing_tracker = Tracker(
@@ -112,7 +112,7 @@ class TrackerModelTests(TestCase):
             code_signature="tutu.com",
         )
         new_tracker.save()
-        collisions = new_tracker.code_signature_collision()
+        collisions = new_tracker.get_trackers_with_code_signature_collision()
         self.assertEquals(collisions, [])
 
     def test_code_collision_same_signature(self):
@@ -129,7 +129,7 @@ class TrackerModelTests(TestCase):
             code_signature=signature,
         )
         new_tracker.save()
-        collisions = new_tracker.code_signature_collision()
+        collisions = new_tracker.get_trackers_with_code_signature_collision()
         self.assertEquals(collisions, [existing_tracker_name])
 
     def test_network_collision_same_signature(self):
@@ -146,7 +146,7 @@ class TrackerModelTests(TestCase):
             network_signature=signature,
         )
         new_tracker.save()
-        collisions = new_tracker.network_signature_collision()
+        collisions = new_tracker.get_trackers_with_network_signature_collision()
         self.assertEquals(collisions, [existing_tracker_name])
 
     def test_network_collision_contains_signature(self):
@@ -163,7 +163,7 @@ class TrackerModelTests(TestCase):
             network_signature=signature,
         )
         new_tracker.save()
-        collisions = new_tracker.network_signature_collision()
+        collisions = new_tracker.get_trackers_with_network_signature_collision()
         self.assertEquals(collisions, [existing_tracker_name])
 
     def test_code_collision_contains_signature(self):
@@ -180,7 +180,7 @@ class TrackerModelTests(TestCase):
             code_signature=signature,
         )
         new_tracker.save()
-        collisions = new_tracker.code_signature_collision()
+        collisions = new_tracker.get_trackers_with_code_signature_collision()
         self.assertEquals(collisions, [existing_tracker_name])
 
     def test_code_collision_multiple_matches(self):
@@ -203,7 +203,7 @@ class TrackerModelTests(TestCase):
             code_signature=signature,
         )
         new_tracker.save()
-        collisions = new_tracker.code_signature_collision()
+        collisions = new_tracker.get_trackers_with_code_signature_collision()
         self.assertEquals(
             collisions, [existing_tracker1_name, existing_tracker2_name])
 
@@ -227,7 +227,7 @@ class TrackerModelTests(TestCase):
             network_signature=signature,
         )
         new_tracker.save()
-        collisions = new_tracker.network_signature_collision()
+        collisions = new_tracker.get_trackers_with_network_signature_collision()
         self.assertEquals(
             collisions, [existing_tracker1_name, existing_tracker2_name])
 

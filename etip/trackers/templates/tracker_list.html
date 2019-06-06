@@ -60,11 +60,11 @@
                                 </td>
                                 <td>
                                     <code>{{ tracker.code_signature|truncatechars:36 }}</code>
-                                    {% if tracker.code_signature_collision %}
+                                    {% if tracker.get_trackers_with_code_signature_collision %}
                                         <div class="alert alert-warning">
                                             <strong>⚠️</strong> collision detected with:
                                             <ul>
-                                                {% for c in tracker.code_signature_collision %}
+                                                {% for c in tracker.get_trackers_with_code_signature_collision %}
                                                     <li>{{ c }}</li>
                                                 {% endfor %}
                                             </ul>
@@ -75,11 +75,11 @@
                                 </td>
                                 <td>
                                     <code>{{ tracker.network_signature|truncatechars:36 }}</code>
-                                    {% if tracker.network_signature_collision %}
+                                    {% if tracker.get_trackers_with_network_signature_collision %}
                                         <div class="alert alert-warning">
                                             <strong>⚠️</strong> collision detected with:
                                             <ul>
-                                                {% for c in tracker.network_signature_collision %}
+                                                {% for c in tracker.get_trackers_with_network_signature_collision %}
                                                     <li>{{ c }}</li>
                                                 {% endfor %}
                                             </ul>
