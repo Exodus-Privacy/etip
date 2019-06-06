@@ -415,6 +415,28 @@ class IndexTrackerListViewTests(TestCase):
     def test_with_results_and_paginate(self):
         for i in range(0, 25):
             Tracker(
+                name='AcTracker_name'
+            ).save()
+
+        for i in range(0, 10):
+            Tracker(
+                name='AbTracker_name'
+            ).save()
+
+        c = Client()
+        response = c.get(
+            '/',
+            {'tracker_name': 'Ac', 'page': 2}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Ab')
+        self.assertEqual(response.context['count'], 25)
+        self.assertEqual(len(response.context['trackers']), 5)
+
+
+    def test_with_all_filters_and_paginate(self):
+        for i in range(0, 25):
+            Tracker(
                 name='AcTracker_name',
                 code_signature='toto.com'
             ).save()
