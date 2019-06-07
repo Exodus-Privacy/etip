@@ -42,6 +42,64 @@ class TrackerModelTests(TestCase):
         except ValidationError:
             self.fail("full_clean() raised unexpectedly")
 
+    def test_any_signature_collision_with_code_signature_one(self):
+        existing_tracker = Tracker(
+            name="toto",
+            code_signature="toto.com",
+        )
+        existing_tracker.save()
+
+        new_tracker = Tracker(
+            name="tutu",
+            code_signature="toto.com",
+        )
+        new_tracker.save()
+        self.assertEquals(new_tracker.has_any_signature_collision(), True)
+
+    def test_any_signature_collision_with_network_signature_one(self):
+        existing_tracker = Tracker(
+            name="toto",
+            network_signature="toto.com",
+        )
+        existing_tracker.save()
+
+        new_tracker = Tracker(
+            name="tutu",
+            network_signature="toto.com",
+        )
+        new_tracker.save()
+        self.assertEquals(new_tracker.has_any_signature_collision(), True)
+
+    def test_any_signature_collision_containing_network_signature_one(self):
+        existing_tracker = Tracker(
+            name="toto",
+            network_signature="toto.com.truc",
+        )
+        existing_tracker.save()
+
+        new_tracker = Tracker(
+            name="tutu",
+            network_signature="toto.com",
+        )
+        new_tracker.save()
+        self.assertEquals(new_tracker.has_any_signature_collision(), True)
+
+    def test_any_signature_collision_without_collisions(self):
+        existing_tracker = Tracker(
+            name="toto",
+            network_signature="tata.com",
+            code_signature="titi.com"
+        )
+        existing_tracker.save()
+
+        new_tracker = Tracker(
+            name="tutu",
+            network_signature="titi.com",
+            code_signature="tata.com"
+        )
+        new_tracker.save()
+        self.assertEquals(new_tracker.has_any_signature_collision(), False)
+
     def test_code_collision_different_signature(self):
         existing_tracker = Tracker(
             name="toto",
@@ -54,7 +112,7 @@ class TrackerModelTests(TestCase):
             code_signature="tutu.com",
         )
         new_tracker.save()
-        collisions = new_tracker.code_signature_collision()
+        collisions = new_tracker.get_trackers_with_code_signature_collision()
         self.assertEquals(collisions, [])
 
     def test_code_collision_same_signature(self):
@@ -71,7 +129,7 @@ class TrackerModelTests(TestCase):
             code_signature=signature,
         )
         new_tracker.save()
-        collisions = new_tracker.code_signature_collision()
+        collisions = new_tracker.get_trackers_with_code_signature_collision()
         self.assertEquals(collisions, [existing_tracker_name])
 
     def test_network_collision_same_signature(self):
@@ -88,7 +146,7 @@ class TrackerModelTests(TestCase):
             network_signature=signature,
         )
         new_tracker.save()
-        collisions = new_tracker.network_signature_collision()
+        collisions = new_tracker.get_trackers_with_network_signature_collision()
         self.assertEquals(collisions, [existing_tracker_name])
 
     def test_network_collision_contains_signature(self):
@@ -105,7 +163,7 @@ class TrackerModelTests(TestCase):
             network_signature=signature,
         )
         new_tracker.save()
-        collisions = new_tracker.network_signature_collision()
+        collisions = new_tracker.get_trackers_with_network_signature_collision()
         self.assertEquals(collisions, [existing_tracker_name])
 
     def test_code_collision_contains_signature(self):
@@ -122,7 +180,7 @@ class TrackerModelTests(TestCase):
             code_signature=signature,
         )
         new_tracker.save()
-        collisions = new_tracker.code_signature_collision()
+        collisions = new_tracker.get_trackers_with_code_signature_collision()
         self.assertEquals(collisions, [existing_tracker_name])
 
     def test_code_collision_multiple_matches(self):
@@ -145,7 +203,7 @@ class TrackerModelTests(TestCase):
             code_signature=signature,
         )
         new_tracker.save()
-        collisions = new_tracker.code_signature_collision()
+        collisions = new_tracker.get_trackers_with_code_signature_collision()
         self.assertEquals(
             collisions, [existing_tracker1_name, existing_tracker2_name])
 
@@ -169,7 +227,7 @@ class TrackerModelTests(TestCase):
             network_signature=signature,
         )
         new_tracker.save()
-        collisions = new_tracker.network_signature_collision()
+        collisions = new_tracker.get_trackers_with_network_signature_collision()
         self.assertEquals(
             collisions, [existing_tracker1_name, existing_tracker2_name])
 
@@ -290,6 +348,70 @@ class IndexTrackerListViewTests(TestCase):
         self.assertNotContains(response, tracker_2.name)
         self.assertEqual(response.context['count'], 1)
 
+    def test_with_only_collisions_filter(self):
+        tracker_1 = Tracker(
+            name='match_name_tracker_1',
+            code_signature='toto.com',
+            network_signature='network_1',
+            website='https://website1'
+        )
+        tracker_2 = Tracker(
+            name='random name',
+            code_signature='tracker_code_2',
+            network_signature='network_2',
+            website='https://website2'
+        )
+        tracker_3 = Tracker(
+            name='tracker 3',
+            code_signature='toto.com',
+            network_signature='network.signature',
+            website='https://website3'
+        )
+        tracker_4 = Tracker(
+            name='tracker 4',
+            code_signature='code_4',
+            network_signature='network.signature',
+            website='https://website4'
+        )
+
+        tracker_1.save()
+        tracker_2.save()
+        tracker_3.save()
+        tracker_4.save()
+
+        c = Client()
+        response = c.get('/', {'only_collisions': 'true'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, tracker_1.name, 2)
+        self.assertContains(response, tracker_3.name, 3)
+        self.assertContains(response, tracker_4.name, 2)
+        self.assertNotContains(response, tracker_2.name)
+        self.assertEqual(response.context['count'], 3)
+
+    def test_with_only_collisions_filter_without_collisions(self):
+        tracker_1 = Tracker(
+            name='match_name_tracker_1',
+            code_signature='toto.com',
+            network_signature='network_1',
+            website='https://website1'
+        )
+        tracker_2 = Tracker(
+            name='random name',
+            code_signature='tracker_code_2',
+            network_signature='network_2',
+            website='https://website2',
+        )
+
+        tracker_1.save()
+        tracker_2.save()
+
+        c = Client()
+        response = c.get('/', {'only_collisions': 'true'})
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, tracker_1.name)
+        self.assertNotContains(response, tracker_2.name)
+        self.assertEqual(response.context['count'], 0)
+
     def test_with_results_and_paginate(self):
         for i in range(0, 25):
             Tracker(
@@ -302,7 +424,33 @@ class IndexTrackerListViewTests(TestCase):
             ).save()
 
         c = Client()
-        response = c.get('/', {'tracker_name': 'Ac', 'page': 2})
+        response = c.get(
+            '/',
+            {'tracker_name': 'Ac', 'page': 2}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Ab')
+        self.assertEqual(response.context['count'], 25)
+        self.assertEqual(len(response.context['trackers']), 5)
+
+
+    def test_with_all_filters_and_paginate(self):
+        for i in range(0, 25):
+            Tracker(
+                name='AcTracker_name',
+                code_signature='toto.com'
+            ).save()
+
+        for i in range(0, 10):
+            Tracker(
+                name='AbTracker_name'
+            ).save()
+
+        c = Client()
+        response = c.get(
+            '/',
+            {'tracker_name': 'Ac', 'only_collisions': 'true', 'page': 2}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'Ab')
         self.assertEqual(response.context['count'], 25)

@@ -81,23 +81,37 @@ class Tracker(models.Model):
                 {'code_signature': "Must be a valid regex."}
             )
 
-    def code_signature_collision(self):
+    def has_any_signature_collision(self):
+        trackers = Tracker.objects.all().exclude(id=self.id)
+        for t in trackers:
+            if self._has_same_code_signature(t) \
+                    or self._has_same_network_signature(t):
+                return True
+        return False
+
+    def get_trackers_with_code_signature_collision(self):
         collisions = []
         trackers = Tracker.objects.all().exclude(id=self.id)
         for t in trackers:
-            if re.search(self.code_signature, t.code_signature) \
-                    and len(self.code_signature) > self.MIN_SIGNATURE_SIZE:
+            if self._has_same_code_signature(t):
                 collisions.append(t.name)
         return collisions
 
-    def network_signature_collision(self):
+    def get_trackers_with_network_signature_collision(self):
         collisions = []
         trackers = Tracker.objects.all().exclude(id=self.id)
         for t in trackers:
-            if re.search(self.network_signature, t.network_signature) \
-                    and len(self.network_signature) > self.MIN_SIGNATURE_SIZE:
+            if self._has_same_network_signature(t):
                 collisions.append(t.name)
         return collisions
+
+    def _has_same_network_signature(self, tracker):
+        return re.search(self.network_signature, tracker.network_signature) \
+            and len(self.network_signature) > self.MIN_SIGNATURE_SIZE
+
+    def _has_same_code_signature(self, tracker):
+        return re.search(self.code_signature, tracker.code_signature) \
+            and len(self.code_signature) > self.MIN_SIGNATURE_SIZE
 
     def progress(self):
         p = 0
