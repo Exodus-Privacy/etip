@@ -6,7 +6,11 @@ ETIP is meant to ease investigations on tracker detection. For the moment, it of
 
 ## Contribute to the identification of trackers
 
-If you wish to help us identify new trackers, you can request an ETIP account by sending a username and an email address to etip@exodus-privacy.eu.org
+If you wish to help us identify new trackers, you can **request an ETIP account** by sending a username and an email address to etip@exodus-privacy.eu.org
+
+You can equally contribute to the following repositories:
+- https://github.com/YalePrivacyLab/tracker-profiles
+- https://github.com/jawz101/potentialTrackers
 
 ## Development environment
 
