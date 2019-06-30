@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 
-from trackers.models import Capability, Advertising, Analytic, Network, TrackerCategory
+from trackers.models import \
+    Capability, Advertising, Analytic, Network, TrackerCategory
 
 
 class Command(BaseCommand):
@@ -31,7 +32,9 @@ class Command(BaseCommand):
             'Real-world location targeting',
             'Targeted advertising based on consumer actions',
             'Timed advertisements',
-            'Targets across devices, channels and/or platforms (omni-channel marketing, customer journey)',
+            'Targets across devices, '
+            'channels and/or platforms '
+            '(omni-channel marketing, customer journey)',
             'Bidding services',
             'Location-based ad pushing',
             'Alters app functionality based upon user profiles',

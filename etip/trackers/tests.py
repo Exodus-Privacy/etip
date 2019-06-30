@@ -2,7 +2,8 @@ from django.test import TestCase, Client
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.core.exceptions import ValidationError
-from .models import Tracker, Capability, Advertising, Analytic, Network, TrackerCategory
+from .models import \
+    Tracker, Capability, Advertising, Analytic, Network, TrackerCategory
 from io import BytesIO, StringIO
 from unittest.mock import patch
 
@@ -112,7 +113,8 @@ class TrackerModelTests(TestCase):
             code_signature="tutu.com",
         )
         new_tracker.save()
-        collisions = new_tracker.get_trackers_with_code_signature_collision()
+        collisions = \
+            new_tracker.get_trackers_with_code_signature_collision()
         self.assertEquals(collisions, [])
 
     def test_code_collision_same_signature(self):
@@ -146,7 +148,8 @@ class TrackerModelTests(TestCase):
             network_signature=signature,
         )
         new_tracker.save()
-        collisions = new_tracker.get_trackers_with_network_signature_collision()
+        collisions = \
+            new_tracker.get_trackers_with_network_signature_collision()
         self.assertEquals(collisions, [existing_tracker_name])
 
     def test_network_collision_contains_signature(self):
@@ -163,7 +166,8 @@ class TrackerModelTests(TestCase):
             network_signature=signature,
         )
         new_tracker.save()
-        collisions = new_tracker.get_trackers_with_network_signature_collision()
+        collisions = \
+            new_tracker.get_trackers_with_network_signature_collision()
         self.assertEquals(collisions, [existing_tracker_name])
 
     def test_code_collision_contains_signature(self):
@@ -227,7 +231,8 @@ class TrackerModelTests(TestCase):
             network_signature=signature,
         )
         new_tracker.save()
-        collisions = new_tracker.get_trackers_with_network_signature_collision()
+        collisions = \
+            new_tracker.get_trackers_with_network_signature_collision()
         self.assertEquals(
             collisions, [existing_tracker1_name, existing_tracker2_name])
 
@@ -433,7 +438,6 @@ class IndexTrackerListViewTests(TestCase):
         self.assertEqual(response.context['count'], 25)
         self.assertEqual(len(response.context['trackers']), 5)
 
-
     def test_with_all_filters_and_paginate(self):
         for i in range(0, 25):
             Tracker(
@@ -462,7 +466,8 @@ class ExportTrackerListViewTests(TestCase):
         c = Client()
         response = c.get('/trackers/export')
         self.assertEquals(response.status_code, 200)
-        self.assertJSONEqual(response.content.decode('utf-8'), {'trackers': []})
+        self.assertJSONEqual(
+            response.content.decode('utf-8'), {'trackers': []})
 
     def test_with_trackers(self):
         tracker_1 = Tracker(

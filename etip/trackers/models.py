@@ -55,7 +55,8 @@ class Tracker(models.Model):
     description = models.TextField(blank=True)
     creation_date = models.DateField(auto_now_add=True)
     code_signature = models.CharField(max_length=500, default='', blank=True)
-    network_signature = models.CharField(max_length=500, default='', blank=True)
+    network_signature = models.CharField(
+        max_length=500, default='', blank=True)
     website = models.URLField()
     category = models.ManyToManyField(TrackerCategory, blank=True)
     is_in_exodus = models.BooleanField(default=False)

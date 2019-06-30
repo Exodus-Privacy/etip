@@ -88,7 +88,8 @@ class Command(BaseCommand):
             filters.append(Q(**args))
         return reduce(operator.or_, filters)
 
-    def display_diff(self, diff_fields, exodus_tracker, etip_tracker, is_quiet):
+    def display_diff(
+            self, diff_fields, exodus_tracker, etip_tracker, is_quiet):
         for field in diff_fields:
             self.stdout.write('[{}]'.format(field))
             if not is_quiet:
@@ -123,7 +124,8 @@ class Command(BaseCommand):
             self.stdout.write('{} - {}'.format(
                 FOUND_BUT_DIFFERENT, tracker_details.get('name'))
             )
-            self.display_diff(diff_fields, tracker_details, etip_tracker, is_quiet)
+            self.display_diff(
+                diff_fields, tracker_details, etip_tracker, is_quiet)
             return FOUND_BUT_DIFFERENT
 
     def lookup_trackers(self, exodus_trackers, is_quiet, ignore_field):
