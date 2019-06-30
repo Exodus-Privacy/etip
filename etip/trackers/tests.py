@@ -563,6 +563,7 @@ class CompareTrackersWithExodusCommandTest(TestCase):
             mocked_json['trackers'][idx + 1] = {
                 'name': tracker.name,
                 'code_signature': tracker.code_signature,
+                'description': tracker.description,
                 'network_signature': tracker.network_signature,
                 'website': tracker.website
             }
@@ -580,6 +581,7 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         tracker_1 = Tracker(
             name='tracker_1',
             code_signature='code_1',
+            description='description 1',
             network_signature='network_1',
             website='https://website1',
             is_in_exodus=True
@@ -603,6 +605,7 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         tracker_1 = Tracker(
             name='tracker_1',
             code_signature='code_1',
+            description='description 1',
             network_signature='network_1',
             website='https://website1',
             is_in_exodus=True
@@ -610,9 +613,9 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         tracker_2 = Tracker(
             name='tracker_2',
             code_signature='code_2',
+            description='description 2',
             network_signature='network_2',
             website='https://website2',
-            description='description du tracker_2',
             is_in_exodus=True
         )
         tracker_1.save()
@@ -636,6 +639,7 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         tracker_1 = Tracker(
             name='tracker_1',
             code_signature='code_1',
+            description='description 1',
             network_signature='network_1',
             website='https://website1',
             is_in_exodus=True
@@ -664,6 +668,7 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         tracker_1 = Tracker(
             name='tracker_1',
             code_signature='code_1',
+            description='description 1',
             network_signature='network_1',
             website='https://website1',
             is_in_exodus=True
@@ -671,6 +676,7 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         tracker_2 = Tracker(
             name='tracker_1',
             code_signature='code_2',
+            description='description 2',
             network_signature='network_2',
             website='https://website2',
             is_in_exodus=True
@@ -696,6 +702,7 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         tracker_1 = Tracker(
             name='tracker_1',
             code_signature='code_1',
+            description='description 1',
             network_signature='network_1',
             website='https://website1',
             is_in_exodus=True
@@ -703,6 +710,7 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         tracker_2 = Tracker(
             name='tracker_2',
             code_signature='code_1',
+            description='description 2',
             network_signature='network_2',
             website='https://website2',
             is_in_exodus=True
@@ -728,6 +736,7 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         tracker_1 = Tracker(
             name='tracker_1',
             code_signature='code_1',
+            description='description 1',
             network_signature='network_1',
             website='https://website1',
             is_in_exodus=True
@@ -735,6 +744,7 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         tracker_2 = Tracker(
             name='tracker_2',
             code_signature='code_2',
+            description='description 2',
             network_signature='network_2',
             website='https://website2',
             is_in_exodus=True
@@ -742,6 +752,7 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         tracker_3 = Tracker(
             name='tracker_3',
             code_signature='code_3',
+            description='description 3',
             network_signature='network_3',
             website='https://website3',
             is_in_exodus=True
@@ -749,6 +760,7 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         tracker_3bis = Tracker(
             name='tracker_3',
             code_signature='code_3',
+            description='description 3',
             network_signature='network_3',
             website='https://website3',
             is_in_exodus=True
@@ -756,6 +768,7 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         tracker_4 = Tracker(
             name='tracker_4',
             code_signature='code_4',
+            description='description 4',
             network_signature='network_4',
             website='https://website4',
             is_in_exodus=True
@@ -791,6 +804,7 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         tracker_1 = Tracker(
             name='tracker_1',
             code_signature='code_1',
+            description='description 1',
             network_signature='network_1',
             website='https://website1',
             is_in_exodus=True
@@ -836,6 +850,35 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         )
         out = self.__call_command(
             200, mocked_json, ['--ignore-field', 'code_signature'])
+        self.assertIn(expected_answer, out.getvalue())
+
+    def test_different_description(self):
+        tracker_1 = Tracker(
+            name='tracker_1',
+            code_signature='code_1',
+            description='my simple description',
+            network_signature='network_1',
+            website='https://website1',
+            is_in_exodus=True
+        )
+        tracker_1.save()
+        mocked_json = self.__build_json_mock_response([tracker_1])
+        mocked_json['trackers'][1]['description'] = 'another description'
+        expected_answer = (
+            "Retrieved 1 trackers from Exodus\n"
+            "Found 1 trackers in ETIP DB expected to be in Exodus\n"
+            "Starting case-sensitive lookup...\n"
+            "FOUND_BUT_DIFFERENT - tracker_1\n"
+            "[description]\n"
+            "etip  : my simple description\n"
+            "exodus: another description\n"
+            "Lookup results:\n"
+            "** FOUND_AND_IDENTICAL: 0\n"
+            "** FOUND_BUT_DIFFERENT: 1\n"
+            "** MULTIPLE_MATCHES_FOUND_IN_ETIP: 0\n"
+            "** NOT_FOUND_IN_ETIP: 0\n"
+        )
+        out = self.__call_command(200, mocked_json, [])
         self.assertIn(expected_answer, out.getvalue())
 
 

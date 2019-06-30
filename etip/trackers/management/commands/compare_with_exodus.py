@@ -16,6 +16,7 @@ FIELDS_TO_SEARCH = [
 FIELDS_TO_COMPARE = [
     'name',
     'code_signature',
+    'description',
     'network_signature',
     'website'
 ]
