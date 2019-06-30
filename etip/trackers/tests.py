@@ -801,6 +801,7 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         expected_answer = (
             "Retrieved 1 trackers from Exodus\n"
             "Found 1 trackers in ETIP DB expected to be in Exodus\n"
+            "Using quiet mode; Not going to display diff details.\n"
             "Starting case-sensitive lookup...\n"
             "Lookup results:\n"
             "** FOUND_AND_IDENTICAL: 0\n"
@@ -809,6 +810,32 @@ class CompareTrackersWithExodusCommandTest(TestCase):
             "** NOT_FOUND_IN_ETIP: 0\n"
         )
         out = self.__call_command(200, mocked_json, ['-q'])
+        self.assertIn(expected_answer, out.getvalue())
+
+    def test_consider_identical_because_ignore_one_field(self):
+        tracker_1 = Tracker(
+            name='tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1',
+            is_in_exodus=True
+        )
+        tracker_1.save()
+        mocked_json = self.__build_json_mock_response([tracker_1])
+        mocked_json['trackers'][1]['code_signature'] = 'another_signature'
+        expected_answer = (
+            "Retrieved 1 trackers from Exodus\n"
+            "Found 1 trackers in ETIP DB expected to be in Exodus\n"
+            "Going to ignore field code_signature in comparison.\n"
+            "Starting case-sensitive lookup...\n"
+            "Lookup results:\n"
+            "** FOUND_AND_IDENTICAL: 1\n"
+            "** FOUND_BUT_DIFFERENT: 0\n"
+            "** MULTIPLE_MATCHES_FOUND_IN_ETIP: 0\n"
+            "** NOT_FOUND_IN_ETIP: 0\n"
+        )
+        out = self.__call_command(
+            200, mocked_json, ['--ignore-field', 'code_signature'])
         self.assertIn(expected_answer, out.getvalue())
 
 

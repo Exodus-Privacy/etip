@@ -47,19 +47,36 @@ class Command(BaseCommand):
             help='Hide details of differences when tracker is ' +
             'found but different'
         )
+        parser.add_argument(
+            '-i',
+            '--ignore-field',
+            type=str,
+            nargs='?',
+            help='Specify a field name that should be ignored in comparison',
+        )
 
     def handle(self, *args, **options):
         exodus_trackers = self.get_all_from_exodus(options['exodus_hostname'])
         self.stdout.write(
-            'Retrieved {} trackers from Exodus'.format(len(exodus_trackers))
-        )
+            'Retrieved {} trackers from Exodus'.format(len(exodus_trackers)))
         self.count_etip_trackers()
-        self.lookup_trackers(exodus_trackers, options['quiet'])
 
-    def get_diff_fields(self, exodus_tracker, etip_tracker):
+        if options['ignore_field']:
+            self.stdout.write(
+                'Going to ignore field {} in comparison.'.format(
+                    options['ignore_field']))
+        if options['quiet']:
+            self.stdout.write(
+                'Using quiet mode; Not going to display diff details.')
+
+        self.lookup_trackers(
+            exodus_trackers, options['quiet'], options['ignore_field'])
+
+    def get_diff_fields(self, exodus_tracker, etip_tracker, ignore_field):
         diff_fields = []
         for field in FIELDS_TO_COMPARE:
-            if getattr(etip_tracker, field) != exodus_tracker.get(field):
+            if field != ignore_field \
+               and getattr(etip_tracker, field) != exodus_tracker.get(field):
                 diff_fields.append(field)
         return diff_fields
 
@@ -80,7 +97,7 @@ class Command(BaseCommand):
                 exodus_tracker.get(field)
             ))
 
-    def find_etip_tracker(self, tracker_details, is_quiet):
+    def find_etip_tracker(self, tracker_details, is_quiet, ignore_field):
         search_filters = self.build_query(tracker_details)
         try:
             etip_tracker = Tracker.objects.exclude(
@@ -98,7 +115,8 @@ class Command(BaseCommand):
                     NOT_FOUND, tracker_details.get('name'))
                 )
             return NOT_FOUND
-        diff_fields = self.get_diff_fields(tracker_details, etip_tracker)
+        diff_fields = self.get_diff_fields(
+            tracker_details, etip_tracker, ignore_field)
         if (len(diff_fields) == 0):
             return FOUND_AND_IDENTICAL
         else:
@@ -109,12 +127,12 @@ class Command(BaseCommand):
                 self.display_diff(diff_fields, tracker_details, etip_tracker)
             return FOUND_BUT_DIFFERENT
 
-    def lookup_trackers(self, exodus_trackers, is_quiet):
+    def lookup_trackers(self, exodus_trackers, is_quiet, ignore_field):
         result_counters = {t: 0 for t in TYPES}
-
         self.stdout.write('Starting case-sensitive lookup...')
         for id, tracker_details in exodus_trackers.items():
-            lookup_result = self.find_etip_tracker(tracker_details, is_quiet)
+            lookup_result = self.find_etip_tracker(
+                tracker_details, is_quiet, ignore_field)
             result_counters[lookup_result] += 1
         self.stdout.write('Lookup results:')
         for type in TYPES:
