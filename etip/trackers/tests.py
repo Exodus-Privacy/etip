@@ -817,6 +817,8 @@ class CompareTrackersWithExodusCommandTest(TestCase):
             "Found 1 trackers in ETIP DB expected to be in Exodus\n"
             "Using quiet mode; Not going to display diff details.\n"
             "Starting case-sensitive lookup...\n"
+            "FOUND_BUT_DIFFERENT - tracker_1\n"
+            "[code_signature]\n"
             "Lookup results:\n"
             "** FOUND_AND_IDENTICAL: 0\n"
             "** FOUND_BUT_DIFFERENT: 1\n"
