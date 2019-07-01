@@ -88,15 +88,16 @@ class Command(BaseCommand):
             filters.append(Q(**args))
         return reduce(operator.or_, filters)
 
-    def display_diff(self, diff_fields, exodus_tracker, etip_tracker):
+    def display_diff(self, diff_fields, exodus_tracker, etip_tracker, is_quiet):
         for field in diff_fields:
             self.stdout.write('[{}]'.format(field))
-            self.stdout.write('etip  : {}'.format(
-                getattr(etip_tracker, field)
-            ))
-            self.stdout.write('exodus: {}'.format(
-                exodus_tracker.get(field)
-            ))
+            if not is_quiet:
+                self.stdout.write('etip  : {}'.format(
+                    getattr(etip_tracker, field)
+                ))
+                self.stdout.write('exodus: {}'.format(
+                    exodus_tracker.get(field)
+                ))
 
     def find_etip_tracker(self, tracker_details, is_quiet, ignore_field):
         search_filters = self.build_query(tracker_details)
@@ -105,27 +106,24 @@ class Command(BaseCommand):
                 is_in_exodus=False
             ).get(search_filters)
         except MultipleObjectsReturned:
-            if not is_quiet:
-                self.stdout.write('{} - {}'.format(
-                    MULTIPLE_FOUND, tracker_details.get('name'))
-                )
+            self.stdout.write('{} - {}'.format(
+                MULTIPLE_FOUND, tracker_details.get('name'))
+            )
             return MULTIPLE_FOUND
         except ObjectDoesNotExist:
-            if not is_quiet:
-                self.stdout.write('{} - {}'.format(
-                    NOT_FOUND, tracker_details.get('name'))
-                )
+            self.stdout.write('{} - {}'.format(
+                NOT_FOUND, tracker_details.get('name'))
+            )
             return NOT_FOUND
         diff_fields = self.get_diff_fields(
             tracker_details, etip_tracker, ignore_field)
         if (len(diff_fields) == 0):
             return FOUND_AND_IDENTICAL
         else:
-            if not is_quiet:
-                self.stdout.write('{} - {}'.format(
-                    FOUND_BUT_DIFFERENT, tracker_details.get('name'))
-                )
-                self.display_diff(diff_fields, tracker_details, etip_tracker)
+            self.stdout.write('{} - {}'.format(
+                FOUND_BUT_DIFFERENT, tracker_details.get('name'))
+            )
+            self.display_diff(diff_fields, tracker_details, etip_tracker, is_quiet)
             return FOUND_BUT_DIFFERENT
 
     def lookup_trackers(self, exodus_trackers, is_quiet, ignore_field):
