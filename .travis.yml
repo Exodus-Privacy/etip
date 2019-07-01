@@ -1,15 +1,27 @@
 language: python
 
-python:
-  - "3.5"
-  - "3.6"
+stages:
+  - linter
+  - test
 
 env:
   - DJANGO_SETTINGS_MODULE=etip.settings.dev
 
-install:
-  - pip install -r requirements.txt
-
-script:
-  - cd etip
-  - python manage.py test
+jobs:
+  include:
+    - stage: linter
+      python:
+        - 3.5
+      install:
+        - pip install flake8
+      script:
+        - flake8 etip/
+    - stage: test
+      python:
+        - 3.5
+        - 3.6
+      install:
+        - pip install -r requirements.txt
+      script:
+        - cd etip/
+        - python manage.py test
