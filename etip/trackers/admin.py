@@ -9,8 +9,11 @@ from trackers.models import \
 class TrackerModelAdmin(VersionAdmin):
     date_hierarchy = 'created'
     search_fields = ['name']
-    list_display = ('name', 'code_signature', 'is_in_exodus')
+    list_display = ('name', 'code_signature', 'categories', 'is_in_exodus')
     list_filter = ('is_in_exodus',)
+
+    def categories(self, obj):
+        return ", ".join([c.name for c in obj.category.all()])
 
 
 @admin.register(Capability)
