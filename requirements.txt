@@ -1,8 +1,9 @@
 certifi==2019.3.9
 chardet==3.0.4
-Django~=2.0.3
+Django==2.0.13
 django-bootstrap3==9.1.0
 django-reversion==2.0.13
+djangorestframework==3.10.3
 gunicorn==19.7.1
 idna==2.8
 pytz==2019.1
