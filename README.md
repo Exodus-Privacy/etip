@@ -72,3 +72,26 @@ python manage.py compare_with_exodus
 Note: for now, it only compares with local trackers having the flag `is_in_exodus`.
 
 The default Exodus instance queried is the public one available at https://reports.exodus-privacy.eu.org (see `--exodus-hostname` parameter).
+
+### API
+An API is available to help administrate the ETIP database.
+
+#### Authenticate
+```
+POST /api/get-auth-token/
+```
+Example:
+```
+curl -X POST http://localhost:8000/api/get-auth-token/ --data "username=admin&password=testtest"
+```
+
+You need to include your token as an `Authorization` header in all subsequent requests.
+
+#### Get trackers
+```
+GET /api/trackers/
+```
+Example:
+```
+curl -X GET http://localhost:8000/api/trackers/ -H 'Authorization: Token <your-token>'
+```
