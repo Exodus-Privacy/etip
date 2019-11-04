@@ -32,8 +32,8 @@ class Command(BaseCommand):
             'Real-world location targeting',
             'Targeted advertising based on consumer actions',
             'Timed advertisements',
-            'Targets across devices, '
-            'channels and/or platforms '
+            'Targets across devices, ' +
+            'channels and/or platforms ' +
             '(omni-channel marketing, customer journey)',
             'Bidding services',
             'Location-based ad pushing',
