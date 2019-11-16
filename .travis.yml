@@ -1,3 +1,7 @@
+branches:
+  only:
+  - master
+
 language: python
 
 stages:
@@ -5,8 +9,8 @@ stages:
   - test
 
 python:
-  - 3.5
   - 3.6
+  - 3.7
 
 env:
   - DJANGO_SETTINGS_MODULE=etip.settings.dev
@@ -21,7 +25,7 @@ script:
 jobs:
   include:
     - stage: linter
-      python: 3.6
+      python: 3.7
       install:
         - pip install flake8
       script:
