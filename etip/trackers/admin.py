@@ -9,7 +9,12 @@ from trackers.models import \
 class TrackerModelAdmin(VersionAdmin):
     date_hierarchy = 'created'
     search_fields = ['name']
-    list_display = ('name', 'code_signature', 'categories', 'is_in_exodus')
+    list_display = (
+        'name',
+        'code_signature',
+        'network_signature',
+        'categories'
+    )
     list_filter = ('is_in_exodus',)
 
     def categories(self, obj):
