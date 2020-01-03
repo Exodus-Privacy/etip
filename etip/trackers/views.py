@@ -26,7 +26,7 @@ def index(request):
 
         paginator = Paginator(trackers, 20)
         page = request.GET.get('page', 1)
-        trackers = paginator.page(page)
+        trackers = paginator.get_page(page)
     except Tracker.DoesNotExist:
         raise Http404("trackers does not exist")
 
