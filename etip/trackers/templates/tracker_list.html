@@ -41,8 +41,8 @@
           {% for tracker in trackers %}
             <tr>
               <td>
-                <a href="/admin/trackers/tracker/{{ tracker.id }}/change/">
-                  <strong>🖊️ {{ tracker.name }}</strong>
+                <a href="{% url 'trackers:display_tracker' tracker.id %}">
+                  <strong>{{ tracker.name }}</strong>
                 </a>
                 <div class="progress">
                   <div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: {{ tracker.progress }}%"

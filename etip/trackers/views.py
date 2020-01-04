@@ -2,8 +2,9 @@ from django.http import JsonResponse
 from django.http.response import Http404
 from django.core.paginator import Paginator
 from django.shortcuts import render
+from django.core.exceptions import ValidationError
 
-from trackers.models import Tracker
+from .models import Tracker
 
 
 def index(request):
@@ -36,6 +37,15 @@ def index(request):
         'filter_name': filter_name,
         'only_collisions': 'checked' if only_collisions else ''
     })
+
+
+def display_tracker(request, id):
+    try:
+        tracker = Tracker.objects.get(pk=id)
+    except (Tracker.DoesNotExist, ValidationError):
+        raise Http404("Tracker does not exist")
+
+    return render(request, 'tracker.html', {'tracker': tracker})
 
 
 def export_tracker_list(request):
