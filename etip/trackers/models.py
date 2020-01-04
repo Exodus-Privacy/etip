@@ -73,6 +73,12 @@ class Tracker(models.Model):
     def __str__(self):
         return self.name
 
+    def get_fields(self):
+        return [
+            (field.name, field.value_to_string(self))
+            for field in Tracker._meta.fields
+        ]
+
     def clean_fields(self, exclude=None):
         super().clean_fields(exclude=exclude)
         try:

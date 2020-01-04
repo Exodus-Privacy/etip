@@ -1,0 +1,36 @@
+{% extends "base.html"%}
+{% load markdown_extras %}
+{% block content %}
+<div class="row justify-content-md-center">
+  <div class="col-xl-10 col-12">
+    <p>
+      <a class="btn btn-primary" href="/admin/trackers/tracker/{{ tracker.id }}/change/">🖋️ EDIT TRACKER</a>
+    </p>
+
+    {% if tracker.get_trackers_with_network_signature_collision or tracker.get_trackers_with_code_signature_collision %}
+      <div class="alert alert-warning">
+        <strong>⚠️</strong> <b>Collision detected</b> with:
+        <ul>
+          {% for c in tracker.get_trackers_with_network_signature_collision %}
+            <li>{{ c }} (network signature)</li>
+          {% endfor %}
+          {% for c in tracker.get_trackers_with_code_signature_collision %}
+            <li>{{ c }} (code signature)</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <table class="table table-bordered table-striped">
+      {% for name, value in tracker.get_fields %}
+        {% if value %}
+          <tr>
+            <th class="text-uppercase">{{ name }}</th>
+            <td>{% if name == "description" %}{{ value | markdown | safe }}{% else %}{{ value }}{% endif %}</td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -461,6 +461,74 @@ class IndexTrackerListViewTests(TestCase):
         self.assertEqual(len(response.context['trackers']), 5)
 
 
+class DisplayTrackerListViewTests(TestCase):
+    def test_returns_404_if_missing_tracker(self):
+        c = Client()
+        response = c.get('/trackers/00b4c3a3-7240-4ffa-8525-3bc934157ccf/')
+        self.assertEqual(response.status_code, 404)
+
+    def test_returns_404_if_wrong_uid(self):
+        c = Client()
+        response = c.get('/trackers/1/')
+        self.assertEqual(response.status_code, 404)
+
+    def test_returns_something_where_valid_tracker(self):
+        tracker = Tracker.objects.create(
+            name='name_tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1'
+        )
+
+        c = Client()
+        response = c.get('/trackers/{}/'.format(tracker.id))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, tracker.name, 1)
+        self.assertNotContains(response, "Collision detected")
+
+    def test_displays_collision_when_code_collision(self):
+        tracker_1 = Tracker.objects.create(
+            name='match_name_tracker_1',
+            code_signature='toto.com',
+            network_signature='network_1',
+            website='https://website1'
+        )
+        tracker_2 = Tracker.objects.create(
+            name='tracker 2',
+            code_signature='toto.com',
+            network_signature='network.signature',
+            website='https://website2'
+        )
+        expected_message = "{} (code signature)".format(tracker_2.name)
+
+        c = Client()
+        response = c.get('/trackers/{}/'.format(tracker_1.id))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Collision detected")
+        self.assertContains(response, expected_message)
+
+    def test_displays_collision_when_network_collision(self):
+        tracker_1 = Tracker.objects.create(
+            name='tracker 1',
+            code_signature='toto.com',
+            network_signature='network.signature',
+            website='https://website1'
+        )
+        tracker_2 = Tracker.objects.create(
+            name='tracker 2',
+            code_signature='code_2',
+            network_signature='network.signature',
+            website='https://website2'
+        )
+        expected_message = "{} (network signature)".format(tracker_2.name)
+
+        c = Client()
+        response = c.get('/trackers/{}/'.format(tracker_1.id))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Collision detected")
+        self.assertContains(response, expected_message)
+
+
 class ExportTrackerListViewTests(TestCase):
     def test_without_trackers(self):
         c = Client()
