@@ -1,7 +1,6 @@
 {% extends "base.html"%}
 {% load markdown_extras %}
 {% block content %}
-<div class="row justify-content-md-center">
   <div class="col-xl-10 col-12">
     <p>
       <a class="btn btn-primary" href="/admin/trackers/tracker/{{ tracker.id }}/change/">🖋️ EDIT TRACKER</a>
@@ -32,5 +31,4 @@
       {% endfor %}
     </table>
   </div>
-</div>
 {% endblock %}

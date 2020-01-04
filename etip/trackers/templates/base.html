@@ -29,15 +29,28 @@
     </a>
     <div class="ml-auto">
         <a class="btn btn-light btn-sm mr-lg-1 ml-lg-1" href="{% url 'admin:trackers_tracker_add' %}" role="button">ADD NEW TRACKER</a>
-        <a class="btn btn-light btn-sm mr-lg-1 ml-lg-1" href="{% url 'admin:index' %}" role="button">ADMIN</a>
+        <a class="btn btn-light btn-sm mr-lg-1 ml-lg-1" href="{% url 'admin:login' %}" role="button">LOGIN</a>
         <a class="btn btn-light btn-sm mr-lg-1 ml-xl-1" target="_blank" rel="noreferrer" href="https://github.com/Exodus-Privacy/etip/" role="button">GITHUB</a>
     </div>
 </nav>
 <br>
 <div class="container-fluid">
-    {% block content %}
+    <div class="row justify-content-md-center">
+        {% if not user.is_authenticated %}
+            <div class="col-xl-10 col-12">
+                <div class="alert alert-info">
+                    ℹ️&nbsp;&nbsp;You need to be logged in to <b>add a new tracker</b> or <b>edit existing ones</b> -
+                    <a target="_blank" rel="noreferrer" href="https://github.com/Exodus-Privacy/etip/#contribute-to-the-identification-of-trackers">
+                        More details
+                    </a>
+                </div>
+            </div>
+        {% endif %}
 
-    {% endblock %}
+        {% block content %}
+
+        {% endblock %}
+    </div>
 </div>
 <script>
 $(function () {
