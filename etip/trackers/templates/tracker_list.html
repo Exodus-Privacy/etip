@@ -61,7 +61,7 @@
                 <input type="checkbox" disabled="disabled" {% if tracker.is_in_exodus %}checked{% endif %}/>
               </td>
               <td>
-                <a href="{{ tracker.website }}">www</a>
+                <a target="_blank" rel="noreferrer" href="{{ tracker.website }}">www</a>
               </td>
               <td>
                 {% for c in tracker.category.all %}
