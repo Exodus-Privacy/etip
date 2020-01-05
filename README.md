@@ -1,4 +1,5 @@
-# ETIP - εxodus tracker investigation platform [![Build Status](https://travis-ci.org/Exodus-Privacy/etip.svg?branch=master)](https://travis-ci.org/Exodus-Privacy/etip)
+# ETIP - εxodus tracker investigation platform
+[![Build Status](https://travis-ci.org/Exodus-Privacy/etip.svg?branch=master)](https://travis-ci.org/Exodus-Privacy/etip) [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Exodus-Privacy/etip.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Exodus-Privacy/etip/context:python)
 
 ETIP is meant to ease investigations on tracker detection. For the moment, it offers few functionalities:
 * track all modifications on trackers
