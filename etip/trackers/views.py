@@ -9,14 +9,21 @@ from .models import Tracker
 
 def index(request):
     try:
+        # TODO: Use a Django Form instead ?
         filter_name = request.GET.get('tracker_name', '')
         only_collisions = request.GET.get('only_collisions', False)
+        trackers_select = request.GET.get('trackers_select', False)
         if filter_name:
             trackers = Tracker.objects.filter(name__startswith=filter_name)
         else:
             trackers = Tracker.objects
 
         trackers = trackers.order_by('name')
+
+        if trackers_select == "exodus":
+            trackers = trackers.filter(is_in_exodus=True)
+        elif trackers_select == "etip":
+            trackers = trackers.filter(is_in_exodus=False)
 
         if only_collisions:
             trackers = list(
@@ -35,7 +42,8 @@ def index(request):
         'trackers': trackers,
         'count': count,
         'filter_name': filter_name,
-        'only_collisions': 'checked' if only_collisions else ''
+        'only_collisions': 'checked' if only_collisions else '',
+        'trackers_select': trackers_select
     })
 
 
