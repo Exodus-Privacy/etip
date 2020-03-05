@@ -393,6 +393,72 @@ class IndexTrackerListViewTests(TestCase):
         self.assertNotContains(response, tracker_2.name)
         self.assertEqual(response.context['count'], 3)
 
+    def test_with_only_in_exodus_filter(self):
+        tracker_not_in_exodus = Tracker.objects.create(
+            name='name_tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1'
+        )
+        tracker_in_exodus = Tracker.objects.create(
+            name='random name',
+            code_signature='code_2',
+            network_signature='network_2',
+            website='https://website2',
+            is_in_exodus=True
+        )
+
+        c = Client()
+        response = c.get('/', {'trackers_select': 'exodus'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['count'], 1)
+        self.assertContains(response, tracker_in_exodus.name, 1)
+        self.assertNotContains(response, tracker_not_in_exodus.name)
+
+    def test_with_only_in_etip_filter(self):
+        tracker_not_in_exodus = Tracker.objects.create(
+            name='name_tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1'
+        )
+        tracker_in_exodus = Tracker.objects.create(
+            name='random name',
+            code_signature='code_2',
+            network_signature='network_2',
+            website='https://website2',
+            is_in_exodus=True
+        )
+
+        c = Client()
+        response = c.get('/', {'trackers_select': 'etip'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['count'], 1)
+        self.assertContains(response, tracker_not_in_exodus.name, 1)
+        self.assertNotContains(response, tracker_in_exodus.name)
+
+    def test_with_all_trackers_filter(self):
+        tracker_not_in_exodus = Tracker.objects.create(
+            name='name_tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1'
+        )
+        tracker_in_exodus = Tracker.objects.create(
+            name='random name',
+            code_signature='code_2',
+            network_signature='network_2',
+            website='https://website2',
+            is_in_exodus=True
+        )
+
+        c = Client()
+        response = c.get('/', {'trackers_select': 'all'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['count'], 2)
+        self.assertContains(response, tracker_not_in_exodus.name, 1)
+        self.assertContains(response, tracker_in_exodus.name, 1)
+
     def test_with_only_collisions_filter_without_collisions(self):
         tracker_1 = Tracker(
             name='match_name_tracker_1',

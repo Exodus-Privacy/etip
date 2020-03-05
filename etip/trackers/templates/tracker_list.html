@@ -11,6 +11,13 @@
     <form class="form-inline" method="get">
       <label class="sr-only" for="inlineFormTrackerName">Tracker name:</label>
       <input type="text" class="form-control mb-2 mr-2 col-3" value="{{ filter_name }}" name="tracker_name" id="inlineFormTrackerName" placeholder="Tracker name">
+      <div class="form-row mb-2 ml-sm-2 mr-sm-2">
+        <select class="custom-select" id="trackers_select" name="trackers_select">
+          <option value="all" {% if trackers_select != "exodus" and trackers_select != "etip" %}selected{% endif %}>All trackers</option>
+          <option value="exodus" {% if trackers_select == "exodus" %}selected{% endif %}>In exodus</option>
+          <option value="etip" {% if trackers_select == "etip" %}selected{% endif %}>Only in ETIP</option>
+        </select>
+      </div>
       <div class="form-check mb-2 mr-sm-2">
         <input type="checkbox" class="form-check-input" id="onlyCollisionCheckbox" name="only_collisions" {{ only_collisions }}/>
         <label class="form-check-label" for="onlyCollisionCheckbox">Only collisions</label>
