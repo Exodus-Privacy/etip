@@ -20,5 +20,6 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('restful_api.urls')),
+    path('stats/', include('stats.urls')),
     path('', include('trackers.urls')),
 ]
