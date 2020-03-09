@@ -20,6 +20,10 @@ class TrackerSerializer(serializers.ModelSerializer):
           'is_in_exodus',
           'code_signature',
           'network_signature',
-          'website'
+          'website',
+          'maven_repository',
+          'group_id',
+          'artifact_id',
+          'gradle',
         ]
         depth = 1

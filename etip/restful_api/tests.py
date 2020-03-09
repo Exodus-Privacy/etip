@@ -34,6 +34,10 @@ class RestfulApiGetAllTrackersTests(APITestCase):
             network_signature='tracker1.com',
             website='https://tracker1.com',
             is_in_exodus=True,
+            maven_repository='https://jcenter.bintray.com/',
+            group_id='com.tracker1',
+            artifact_id='tracker',
+            gradle='com.tracker1:tracker:1.2.3',
         )
 
         category1 = TrackerCategory.objects.create(name='Ads')
@@ -48,7 +52,11 @@ class RestfulApiGetAllTrackersTests(APITestCase):
             'network_signature': 'tracker1.com',
             'website': 'https://tracker1.com',
             'is_in_exodus': True,
-            'category': [{'name': 'Ads'}, {'name': 'Location'}]
+            'category': [{'name': 'Ads'}, {'name': 'Location'}],
+            'maven_repository': 'https://jcenter.bintray.com/',
+            'group_id': 'com.tracker1',
+            'artifact_id': 'tracker',
+            'gradle': 'com.tracker1:tracker:1.2.3',
         }]
 
         response = self.client.get(self.TRACKERS_PATH)
