@@ -60,6 +60,7 @@ class Tracker(models.Model):
     website = models.URLField()
     category = models.ManyToManyField(TrackerCategory, blank=True)
     is_in_exodus = models.BooleanField(default=False)
+    api_key_ids = models.CharField(max_length=1000, default='', blank=True)
     capability = models.ManyToManyField(Capability, blank=True)
     advertising = models.ManyToManyField(Advertising, blank=True)
     analytic = models.ManyToManyField(Analytic, blank=True)
