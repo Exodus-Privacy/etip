@@ -46,17 +46,18 @@ class RestfulApiGetAllTrackersTests(APITestCase):
         tracker.category.add(category2)
 
         expected_tracker = [{
-            'name': 'tracker1',
-            'description': 'description of the tracker',
-            'code_signature': 'com.tracker1.ads',
-            'network_signature': 'tracker1.com',
-            'website': 'https://tracker1.com',
-            'is_in_exodus': True,
+            'id': str(tracker.id),
+            'name': tracker.name,
+            'description': tracker.description,
+            'code_signature': tracker.code_signature,
+            'network_signature': tracker.network_signature,
+            'website': tracker.website,
+            'is_in_exodus': tracker.is_in_exodus,
             'category': [{'name': 'Ads'}, {'name': 'Location'}],
-            'maven_repository': 'https://jcenter.bintray.com/',
-            'group_id': 'com.tracker1',
-            'artifact_id': 'tracker',
-            'gradle': 'com.tracker1:tracker:1.2.3',
+            'maven_repository': tracker.maven_repository,
+            'group_id': tracker.group_id,
+            'artifact_id': tracker.artifact_id,
+            'gradle': tracker.gradle,
         }]
 
         response = self.client.get(self.TRACKERS_PATH)
