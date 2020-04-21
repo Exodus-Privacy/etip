@@ -14,6 +14,7 @@ class TrackerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tracker
         fields = [
+          'id',
           'name',
           'category',
           'description',
