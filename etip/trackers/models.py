@@ -82,12 +82,18 @@ class Tracker(models.Model):
 
     def clean_fields(self, exclude=None):
         super().clean_fields(exclude=exclude)
+        regex_errors = []
         try:
             re.compile(self.code_signature)
         except re.error:
+            regex_errors.append('code_signature')
+        try:
+            re.compile(self.network_signature)
+        except re.error:
+            regex_errors.append('network_signature')
+        if regex_errors:
             raise ValidationError(
-                {'code_signature': "Must be a valid regex."}
-            )
+                {err: "Must be a valid regex." for err in regex_errors})
 
     def has_any_signature_collision(self):
         trackers = Tracker.objects.all().exclude(id=self.id)
