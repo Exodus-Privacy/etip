@@ -69,8 +69,8 @@ class RestfulApiGetAllTrackersTests(APITestCase):
     def test_get_trackers_when_2(self):
         self.force_autentication()
 
-        Tracker.objects.create()
-        Tracker.objects.create()
+        Tracker.objects.create(name='toto')
+        Tracker.objects.create(name='toto2')
 
         response = self.client.get(self.TRACKERS_PATH)
 

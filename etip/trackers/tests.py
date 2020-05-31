@@ -65,6 +65,24 @@ class TrackerModelTests(TestCase):
         except ValidationError:
             self.fail("full_clean() raised unexpectedly")
 
+    def test_clean_fields_with_name_already_existing(self):
+        existing_tracker = Tracker(
+            name="toto",
+            code_signature="com.toto",
+            website="http://toto.com"
+        )
+        existing_tracker.save()
+
+        new_tracker = Tracker(
+            name="toto",
+            code_signature="com.toto.ads",
+            website="http://toto.com"
+        )
+
+        error_message = "Tracker with this Name already exists."
+        with self.assertRaisesRegexp(ValidationError, error_message):
+            new_tracker.full_clean()
+
     def test_any_signature_collision_with_code_signature_one(self):
         existing_tracker = Tracker(
             name="toto",
@@ -212,7 +230,7 @@ class TrackerModelTests(TestCase):
     def test_code_collision_multiple_matches(self):
         signature = "toto.com"
         existing_tracker1_name = "toto"
-        existing_tracker2_name = "toto"
+        existing_tracker2_name = "toto2"
         existing_tracker1 = Tracker(
             name=existing_tracker1_name,
             code_signature=signature,
@@ -225,7 +243,7 @@ class TrackerModelTests(TestCase):
         existing_tracker2.save()
 
         new_tracker = Tracker(
-            name="toto2",
+            name="toto3",
             code_signature=signature,
         )
         new_tracker.save()
@@ -236,7 +254,7 @@ class TrackerModelTests(TestCase):
     def test_network_collision_multiple_matches(self):
         signature = "toto.com"
         existing_tracker1_name = "toto"
-        existing_tracker2_name = "toto"
+        existing_tracker2_name = "toto2"
         existing_tracker1 = Tracker(
             name=existing_tracker1_name,
             network_signature=signature,
@@ -249,7 +267,7 @@ class TrackerModelTests(TestCase):
         existing_tracker2.save()
 
         new_tracker = Tracker(
-            name="toto2",
+            name="toto3",
             network_signature=signature,
         )
         new_tracker.save()
@@ -508,12 +526,12 @@ class IndexTrackerListViewTests(TestCase):
     def test_with_results_and_paginate(self):
         for i in range(0, 25):
             Tracker(
-                name='AcTracker_name'
+                name='AcTracker_name_{}'.format(i)
             ).save()
 
         for i in range(0, 10):
             Tracker(
-                name='AbTracker_name'
+                name='AbTracker_name_{}'.format(i)
             ).save()
 
         c = Client()
@@ -529,13 +547,13 @@ class IndexTrackerListViewTests(TestCase):
     def test_with_all_filters_and_paginate(self):
         for i in range(0, 25):
             Tracker(
-                name='AcTracker_name',
+                name='AcTracker_name_{}'.format(i),
                 code_signature='toto.com'
             ).save()
 
         for i in range(0, 10):
             Tracker(
-                name='AbTracker_name'
+                name='AbTracker_name_{}'.format(i)
             ).save()
 
         c = Client()
@@ -825,40 +843,6 @@ class CompareTrackersWithExodusCommandTest(TestCase):
         out = self.__call_command(200, mocked_json, [])
         self.assertIn(expected_answer, out.getvalue())
 
-    def test_find_multiple_same_name(self):
-        tracker_1 = Tracker(
-            name='tracker_1',
-            code_signature='code_1',
-            description='description 1',
-            network_signature='network_1',
-            website='https://website1',
-            is_in_exodus=True
-        )
-        tracker_2 = Tracker(
-            name='tracker_1',
-            code_signature='code_2',
-            description='description 2',
-            network_signature='network_2',
-            website='https://website2',
-            is_in_exodus=True
-        )
-        tracker_1.save()
-        tracker_2.save()
-        mocked_json = self.__build_json_mock_response([tracker_1])
-        expected_answer = (
-            "Retrieved 1 trackers from Exodus\n"
-            "Found 2 trackers in ETIP DB expected to be in Exodus\n"
-            "Starting case-sensitive lookup...\n"
-            "MULTIPLE_MATCHES_FOUND_IN_ETIP - tracker_1\n"
-            "Lookup results:\n"
-            "** FOUND_AND_IDENTICAL: 0\n"
-            "** FOUND_BUT_DIFFERENT: 0\n"
-            "** MULTIPLE_MATCHES_FOUND_IN_ETIP: 1\n"
-            "** NOT_FOUND_IN_ETIP: 0\n"
-        )
-        out = self.__call_command(200, mocked_json, [])
-        self.assertIn(expected_answer, out.getvalue())
-
     def test_find_multiple_same_code_signature(self):
         tracker_1 = Tracker(
             name='tracker_1',
@@ -919,7 +903,7 @@ class CompareTrackersWithExodusCommandTest(TestCase):
             is_in_exodus=True
         )
         tracker_3bis = Tracker(
-            name='tracker_3',
+            name='tracker_3bis',
             code_signature='code_3',
             description='description 3',
             network_signature='network_3',
