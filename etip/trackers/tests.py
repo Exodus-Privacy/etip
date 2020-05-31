@@ -10,17 +10,7 @@ from unittest.mock import patch
 
 class TrackerModelTests(TestCase):
 
-    def test_clean_fields_with_incorrect_code_signature(self):
-        tracker = Tracker(
-            name="tracker1",
-            website="http://example.com",
-            code_signature="*com.tracker.code"
-        )
-
-        with self.assertRaisesRegexp(ValidationError, "Must be a valid regex"):
-            tracker.full_clean()
-
-    def test_clean_fields_without_code_signature(self):
+    def test_clean_fields_without_signatures(self):
         tracker = Tracker(
             name="tracker1",
             website="http://example.com"
@@ -31,11 +21,43 @@ class TrackerModelTests(TestCase):
         except ValidationError:
             self.fail("full_clean() raised unexpectedly")
 
+    def test_clean_fields_with_incorrect_code_signature(self):
+        tracker = Tracker(
+            name="tracker1",
+            website="http://example.com",
+            code_signature="*com.tracker.code"
+        )
+
+        with self.assertRaisesRegexp(ValidationError, "Must be a valid regex"):
+            tracker.full_clean()
+
     def test_clean_fields_with_correct_code_signature(self):
         tracker = Tracker(
             name="tracker1",
             website="http://example.com",
             code_signature="com.tracker.code"
+        )
+
+        try:
+            tracker.full_clean()
+        except ValidationError:
+            self.fail("full_clean() raised unexpectedly")
+
+    def test_clean_fields_with_incorrect_network_signature(self):
+        tracker = Tracker(
+            name="tracker1",
+            website="http://example.com",
+            network_signature="*.com"
+        )
+
+        with self.assertRaisesRegexp(ValidationError, "Must be a valid regex"):
+            tracker.full_clean()
+
+    def test_clean_fields_with_correct_network_signature(self):
+        tracker = Tracker(
+            name="tracker1",
+            website="http://example.com",
+            network_signature="tracker.com"
         )
 
         try:
