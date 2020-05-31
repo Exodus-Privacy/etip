@@ -51,7 +51,7 @@ class Tracker(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    name = models.CharField(max_length=200)
+    name = models.CharField(unique=True, max_length=200)
     description = models.TextField(blank=True)
     creation_date = models.DateField(auto_now_add=True)
     code_signature = models.CharField(max_length=500, default='', blank=True)

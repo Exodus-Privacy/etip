@@ -96,12 +96,12 @@ class IndexStatsListViewTests(TestCase):
             network_signature="toto.com",
         )
         Tracker.objects.create(
-            name="toto",
+            name="toto2",
             network_signature="tata.com",
             code_signature="titi.com"
         )
         Tracker.objects.create(
-            name="tutu",
+            name="tutu2",
             network_signature="titi.com",
             code_signature="tata.com"
         )
