@@ -2,6 +2,9 @@
 {% load markdown_extras %}
 {% block content %}
   <div class="col-xl-10 col-12">
+    <h2>
+      {{ tracker.name }}
+    </h2>
     <p>
       <a class="btn btn-primary" href="/admin/trackers/tracker/{{ tracker.id }}/change/">🖋️ EDIT TRACKER</a>
     </p>
