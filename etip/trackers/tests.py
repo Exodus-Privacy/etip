@@ -549,7 +549,7 @@ class DisplayTrackerListViewTests(TestCase):
         c = Client()
         response = c.get('/trackers/{}/'.format(tracker.id))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, tracker.name, 1)
+        self.assertContains(response, tracker.name, 2)
         self.assertNotContains(response, "Collision detected")
 
     def test_displays_collision_when_code_collision(self):
