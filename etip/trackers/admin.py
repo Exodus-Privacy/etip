@@ -20,6 +20,14 @@ class TrackerModelAdmin(VersionAdmin):
     def categories(self, obj):
         return ", ".join([c.name for c in obj.category.all()])
 
+    def get_exclude(self, request, obj=None):
+        excluded = super().get_exclude(request, obj) or []
+
+        if not request.user.is_superuser:
+            return excluded + ['is_in_exodus']
+
+        return excluded
+
 
 @admin.register(Capability)
 class CapabilityModelAdmin(VersionAdmin):
