@@ -1,10 +1,10 @@
 from django.http import JsonResponse
 from django.http.response import Http404
 from django.core.paginator import Paginator
-from django.shortcuts import render
-from django.core.exceptions import ValidationError
+from django.shortcuts import render, redirect
+from django.core.exceptions import ValidationError, PermissionDenied
 
-from .models import Tracker
+from .models import Tracker, TrackerApproval
 
 
 def index(request):
@@ -12,7 +12,8 @@ def index(request):
         # TODO: Use a Django Form instead ?
         filter_name = request.GET.get('tracker_name', '')
         only_collisions = request.GET.get('only_collisions', False)
-        trackers_select = request.GET.get('trackers_select', False)
+        approve_select = request.GET.get('approve_select', '')
+        trackers_select = request.GET.get('trackers_select', '')
         if filter_name:
             trackers = Tracker.objects.filter(name__startswith=filter_name)
         else:
@@ -30,6 +31,19 @@ def index(request):
                 t for t in trackers if t.has_any_signature_collision()
             )
 
+        if approve_select == "approved":
+            trackers = list(
+                t for t in trackers if t.approvals.count() >= 2
+            )
+        elif approve_select == "need_review":
+            trackers = list(
+                t for t in trackers if t.approvals.count() == 1
+            )
+        elif approve_select == "no_approvals":
+            trackers = list(
+                t for t in trackers if t.approvals.count() == 0
+            )
+
         count = len(trackers)
 
         paginator = Paginator(trackers, 20)
@@ -43,6 +57,7 @@ def index(request):
         'count': count,
         'filter_name': filter_name,
         'only_collisions': 'checked' if only_collisions else '',
+        'approve_select': approve_select,
         'trackers_select': trackers_select
     })
 
@@ -62,3 +77,46 @@ def export_tracker_list(request):
     response = JsonResponse(dict(trackers=trackers_list))
     response['Content-Disposition'] = 'attachment; filename=trackers.json'
     return response
+
+
+def approve(request, id):
+    if request.method != 'POST':
+        return redirect('/')
+
+    if not request.user.is_authenticated:
+        raise PermissionDenied
+
+    try:
+        tracker = Tracker.objects.get(pk=id)
+    except (Tracker.DoesNotExist, ValidationError):
+        raise Http404("Tracker does not exist")
+
+    if tracker.creator() and request.user == tracker.creator():
+        raise PermissionDenied
+
+    approval = TrackerApproval(
+        tracker=tracker,
+        approver=request.user
+    )
+    approval.save()
+    return redirect('/trackers/{}'.format(tracker.id))
+
+
+def revoke(request, id):
+    if request.method != 'POST':
+        return redirect('/')
+
+    if not request.user.is_authenticated:
+        raise PermissionDenied
+
+    try:
+        tracker = Tracker.objects.get(pk=id)
+    except (Tracker.DoesNotExist, ValidationError):
+        raise Http404("Tracker does not exist")
+
+    approval = TrackerApproval.objects.get(
+        tracker=tracker,
+        approver=request.user
+    )
+    approval.delete()
+    return redirect('/trackers/{}'.format(tracker.id))

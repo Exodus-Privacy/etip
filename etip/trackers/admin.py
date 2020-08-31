@@ -1,8 +1,8 @@
 from reversion.admin import VersionAdmin
 from django.contrib import admin
 
-from trackers.models import \
-    Tracker, Capability, Advertising, Analytic, Network, TrackerCategory
+from trackers.models import Tracker, Capability, Advertising, \
+    Analytic, Network, TrackerCategory, TrackerApproval
 
 
 @admin.register(Tracker)
@@ -19,6 +19,11 @@ class TrackerModelAdmin(VersionAdmin):
 
     def categories(self, obj):
         return ", ".join([c.name for c in obj.category.all()])
+
+
+@admin.register(TrackerApproval)
+class TrackerApprovalModelAdmin(VersionAdmin):
+    pass
 
 
 @admin.register(Capability)
