@@ -81,7 +81,7 @@
                     <strong>⚠️</strong> <b>Collision detected</b> with:
                     <ul>
                       {% for c in tracker.get_trackers_with_code_signature_collision %}
-                        <li>{{ c }}</li>
+                        <li><a href="{% url 'trackers:display_tracker' c.id %}">{{ c }}</a></li>
                       {% endfor %}
                     </ul>
                   </div>
@@ -94,7 +94,7 @@
                     <strong>⚠️</strong> <b>Collision detected</b> with:
                     <ul>
                       {% for c in tracker.get_trackers_with_network_signature_collision %}
-                        <li>{{ c }}</li>
+                        <li><a href="{% url 'trackers:display_tracker' c.id %}">{{ c }}</a></li>
                       {% endfor %}
                     </ul>
                   </div>
