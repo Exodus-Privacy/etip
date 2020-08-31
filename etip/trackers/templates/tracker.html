@@ -14,10 +14,10 @@
         <strong>⚠️</strong> <b>Collision detected</b> with:
         <ul>
           {% for c in tracker.get_trackers_with_network_signature_collision %}
-            <li>{{ c }} (network signature)</li>
+            <li><a href="{% url 'trackers:display_tracker' c.id %}">{{ c }}</a> (network signature)</li>
           {% endfor %}
           {% for c in tracker.get_trackers_with_code_signature_collision %}
-            <li>{{ c }} (code signature)</li>
+            <li><a href="{% url 'trackers:display_tracker' c.id %}">{{ c }}</a> (code signature)</li>
           {% endfor %}
         </ul>
       </div>

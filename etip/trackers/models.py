@@ -108,7 +108,7 @@ class Tracker(models.Model):
         trackers = Tracker.objects.all().exclude(id=self.id)
         for t in trackers:
             if self._has_same_code_signature(t):
-                collisions.append(t.name)
+                collisions.append(t)
         return collisions
 
     def get_trackers_with_network_signature_collision(self):
@@ -116,7 +116,7 @@ class Tracker(models.Model):
         trackers = Tracker.objects.all().exclude(id=self.id)
         for t in trackers:
             if self._has_same_network_signature(t):
-                collisions.append(t.name)
+                collisions.append(t)
         return collisions
 
     def _has_same_network_signature(self, tracker):
