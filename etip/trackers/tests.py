@@ -1,11 +1,13 @@
-from django.test import TestCase, Client
+from django.contrib.auth.models import User
+from django.test import TestCase, Client, RequestFactory
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.core.exceptions import ValidationError
-from .models import \
-    Tracker, Capability, Advertising, Analytic, Network, TrackerCategory
+from .models import Tracker, Capability, Advertising, \
+    Analytic, Network, TrackerCategory, TrackerApproval
 from io import BytesIO, StringIO
 from unittest.mock import patch
+from .views import approve, revoke
 
 
 class TrackerModelTests(TestCase):
@@ -343,6 +345,39 @@ class TrackerModelTests(TestCase):
         )
         self.assertEquals(tracker.missing_fields(), expected_output)
 
+    def test_empty_list_when_no_approvers(self):
+        tracker = Tracker.objects.create(
+            name="toto",
+            code_signature="toto.com",
+        )
+
+        self.assertEquals(tracker.approvers(), [])
+
+    def test_returns_list_when_approvers(self):
+        tracker = Tracker.objects.create(
+            name="toto",
+            code_signature="toto.com",
+        )
+        user_1 = User.objects.create_user(
+            username='testuser1', password='12345')
+        user_2 = User.objects.create_user(
+            username='testuser2', password='12345')
+        TrackerApproval.objects.create(approver=user_1, tracker=tracker)
+        TrackerApproval.objects.create(approver=user_2, tracker=tracker)
+
+        self.assertEquals(
+            tracker.approvers(), [user_1.username, user_2.username])
+
+    # TODO: Write test to get creator
+
+    def test_no_creator_if_created_programatically(self):
+        tracker = Tracker.objects.create(
+            name="toto",
+            code_signature="toto.com",
+        )
+
+        self.assertEquals(tracker.creator(), None)
+
 
 class IndexTrackerListViewTests(TestCase):
     def test_with_trackers(self):
@@ -567,6 +602,74 @@ class IndexTrackerListViewTests(TestCase):
         self.assertEqual(len(response.context['trackers']), 5)
 
 
+class IndexTrackerApprovalTests(TestCase):
+
+    def setUp(self):
+        self.tracker_1 = Tracker.objects.create(
+            name='match_name_tracker_1',
+            code_signature='toto.com',
+            network_signature='network_1',
+            website='https://website1'
+        )
+        self.tracker_2 = Tracker.objects.create(
+            name='random name',
+            code_signature='tracker_code_2',
+            network_signature='network_2',
+            website='https://website2',
+        )
+        self.user_1 = User.objects.create_user(
+            username='testuser1', password='12345')
+        self.user_2 = User.objects.create_user(
+            username='testuser2', password='12345')
+
+        self.c = Client()
+
+    def test_with_approved_filter_without_approved(self):
+        response = self.c.get('/', {'approve_select': 'approved'})
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.tracker_1.name)
+        self.assertNotContains(response, self.tracker_2.name)
+        self.assertEqual(response.context['count'], 0)
+
+    def test_with_approved_filter_and_approved_tracker(self):
+        TrackerApproval.objects.create(
+            approver=self.user_1, tracker=self.tracker_1)
+        TrackerApproval.objects.create(
+            approver=self.user_1, tracker=self.tracker_2)
+        TrackerApproval.objects.create(
+            approver=self.user_2, tracker=self.tracker_2)
+
+        response = self.c.get('/', {'approve_select': 'approved'})
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.tracker_1.name)
+        self.assertContains(response, self.tracker_2.name)
+        self.assertEqual(response.context['count'], 1)
+
+    def test_with_need_review_filter_and_approved_tracker(self):
+        TrackerApproval.objects.create(
+            approver=self.user_1, tracker=self.tracker_1)
+        TrackerApproval.objects.create(
+            approver=self.user_1, tracker=self.tracker_2)
+        TrackerApproval.objects.create(
+            approver=self.user_2, tracker=self.tracker_2)
+
+        response = self.c.get('/', {'approve_select': 'need_review'})
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.tracker_2.name)
+        self.assertContains(response, self.tracker_1.name)
+        self.assertEqual(response.context['count'], 1)
+
+    def test_with_no_approvals_filter_and_approved_tracker(self):
+        TrackerApproval.objects.create(
+            approver=self.user_1, tracker=self.tracker_1)
+
+        response = self.c.get('/', {'approve_select': 'no_approvals'})
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.tracker_1.name)
+        self.assertContains(response, self.tracker_2.name)
+        self.assertEqual(response.context['count'], 1)
+
+
 class DisplayTrackerListViewTests(TestCase):
     def test_returns_404_if_missing_tracker(self):
         c = Client()
@@ -635,6 +738,102 @@ class DisplayTrackerListViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Collision detected")
         self.assertContains(response, msg)
+
+    def test_displays_approver(self):
+        tracker = Tracker.objects.create(
+            name='name_tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1'
+        )
+
+        user_1 = User.objects.create_user(
+            username='testuser1', password='12345')
+        user_2 = User.objects.create_user(
+            username='testuser2', password='12345')
+        TrackerApproval.objects.create(approver=user_1, tracker=tracker)
+        TrackerApproval.objects.create(approver=user_2, tracker=tracker)
+
+        c = Client()
+        response = c.get('/trackers/{}/'.format(tracker.id))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, tracker.name, 2)
+        self.assertContains(response, "✔️ {}".format(user_1.username))
+        self.assertContains(response, "✔️ {}".format(user_2.username))
+
+
+class ApproveTrackerViewTests(TestCase):
+    def setUp(self):
+        self.tracker = Tracker.objects.create(
+            name='tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1'
+        )
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username='testuser1', password='12345')
+
+    def test_without_login_gets_rejected(self):
+        c = Client()
+        response = c.post('/trackers/{}/approve/'.format(self.tracker))
+        self.assertEquals(response.status_code, 403)
+
+    def test_with_login_that_approvers_changed(self):
+        request = self.factory.post(
+            '/trackers/{}/approve/'.format(self.tracker))
+        request.user = self.user
+        response = approve(request, self.tracker.id)
+
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(self.tracker.approvers(), [self.user.username])
+
+    def test_get_request_does_not_do_anything(self):
+        request = self.factory.get(
+            '/trackers/{}/approve/'.format(self.tracker))
+        request.user = self.user
+        response = approve(request, self.tracker.id)
+
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(self.tracker.approvers(), [])
+
+
+class RevokeTrackerViewTests(TestCase):
+    def setUp(self):
+        self.tracker = Tracker.objects.create(
+            name='tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1'
+        )
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username='testuser1', password='12345')
+        TrackerApproval.objects.create(
+            approver=self.user, tracker=self.tracker)
+
+    def test_without_login_gets_rejected(self):
+        c = Client()
+        response = c.post('/trackers/{}/revoke/'.format(self.tracker))
+        self.assertEquals(response.status_code, 403)
+
+    def test_with_login_that_approvers_changed(self):
+        request = self.factory.post(
+            '/trackers/{}/revoke/'.format(self.tracker))
+        request.user = self.user
+        response = revoke(request, self.tracker.id)
+
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(self.tracker.approvers(), [])
+
+    def test_get_request_does_not_do_anything(self):
+        request = self.factory.get(
+            '/trackers/{}/revoke/'.format(self.tracker))
+        request.user = self.user
+        response = revoke(request, self.tracker.id)
+
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(self.tracker.approvers(), [self.user.username])
 
 
 class ExportTrackerListViewTests(TestCase):

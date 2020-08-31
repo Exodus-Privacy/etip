@@ -3,6 +3,8 @@ import uuid
 
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
+from reversion.models import Version
 
 
 class Category(models.Model):
@@ -186,3 +188,25 @@ class Tracker(models.Model):
         if not self.gradle:
             missing.append('Gradle')
         return missing
+
+    def approvers(self):
+        approvals = self.approvals.all()
+        return [approval.approver.username for approval in approvals]
+
+    def creator(self):
+        versions = Version.objects.get_for_object(self)
+        if len(versions) > 0:
+            return versions[len(versions) - 1].revision.user
+        else:
+            return None
+
+
+class TrackerApproval(models.Model):
+    tracker = models.ForeignKey(
+        Tracker, related_name='approvals', on_delete=models.CASCADE,)
+    approver = models.ForeignKey(
+        User, related_name='trackers_approval', on_delete=models.CASCADE,)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = (("tracker", "approver"),)

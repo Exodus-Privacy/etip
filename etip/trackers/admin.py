@@ -1,8 +1,8 @@
 from reversion.admin import VersionAdmin
 from django.contrib import admin
 
-from trackers.models import \
-    Tracker, Capability, Advertising, Analytic, Network, TrackerCategory
+from trackers.models import Tracker, Capability, Advertising, \
+    Analytic, Network, TrackerCategory, TrackerApproval
 
 
 @admin.register(Tracker)
@@ -27,6 +27,11 @@ class TrackerModelAdmin(VersionAdmin):
             return excluded + ['is_in_exodus']
 
         return excluded
+
+
+@admin.register(TrackerApproval)
+class TrackerApprovalModelAdmin(VersionAdmin):
+    pass
 
 
 @admin.register(Capability)

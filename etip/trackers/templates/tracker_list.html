@@ -13,14 +13,24 @@
       <input type="text" class="form-control mb-2 mr-2 col-3" value="{{ filter_name }}" name="tracker_name" id="inlineFormTrackerName" placeholder="Tracker name">
       <div class="form-row mb-2 ml-sm-2 mr-sm-2">
         <select class="custom-select" id="trackers_select" name="trackers_select">
-          <option value="all" {% if trackers_select != "exodus" and trackers_select != "etip" %}selected{% endif %}>All trackers</option>
-          <option value="exodus" {% if trackers_select == "exodus" %}selected{% endif %}>In exodus</option>
+          <option value="" selected disabled>In εxodus?</option>
+          <option value="all" {% if trackers_select == "all" %}selected{% endif %}>All trackers</option>
+          <option value="exodus" {% if trackers_select == "exodus" %}selected{% endif %}>In εxodus</option>
           <option value="etip" {% if trackers_select == "etip" %}selected{% endif %}>Only in ETIP</option>
+        </select>
+      </div>
+      <div class="form-row mb-2 ml-sm-2 mr-sm-2">
+        <select class="custom-select" id="approve_select" name="approve_select">
+          <option value="" selected disabled>Approved?</option>
+          <option value="all" {% if approve_select == "all" %}selected{% endif %}>All trackers</option>
+          <option value="no_approvals" {% if approve_select == "no_approvals" %}selected{% endif %}>No approvals</option>
+          <option value="need_review" {% if approve_select == "need_review" %}selected{% endif %}>Need 2nd review</option>
+          <option value="approved" {% if approve_select == "approved" %}selected{% endif %}>Approved</option>
         </select>
       </div>
       <div class="form-check mb-2 mr-sm-2">
         <input type="checkbox" class="form-check-input" id="onlyCollisionCheckbox" name="only_collisions" {{ only_collisions }}/>
-        <label class="form-check-label" for="onlyCollisionCheckbox">Only collisions</label>
+        <label class="form-check-label" for="onlyCollisionCheckbox">With collisions</label>
       </div>
       <button type="submit" class="btn btn-primary mb-2 mr-2">Submit</button>
       <a class="btn btn-info mb-2" href={% url 'trackers:index' %}>Clear filter</a>
