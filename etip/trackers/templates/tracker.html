@@ -13,14 +13,21 @@
     <div class="mt-3 mb-3">
       <a class="btn btn-primary btn-sm" href="/admin/trackers/tracker/{{ tracker.id }}/change/">🖋️ Edit tracker</a>
       {% if user.is_authenticated %}
-        {% if user.get_username != tracker.creator.username %}
-          {% if user.get_username not in tracker.approvers %}
-            <form style="display:inline;" method="post" action="/trackers/{{ tracker.id }}/approve/">{% csrf_token %}
-              <button class="btn btn-success btn-sm" type="submit">✔️ Approve tracker</button>
-            </form>
-          {% else %}
-            <form style="display:inline;" method="post" action="/trackers/{{ tracker.id }}/revoke/">{% csrf_token %}
-              <button class="btn btn-danger btn-sm" type="submit">❌ Revoke tracker</button>
+        {% if not tracker.is_in_exodus %}
+          {% if user.get_username != tracker.creator.username %}
+            {% if user.get_username not in tracker.approvers %}
+              <form style="display:inline;" method="post" action="/trackers/{{ tracker.id }}/approve/">{% csrf_token %}
+                <button class="btn btn-success btn-sm" type="submit">✔️ Approve tracker</button>
+              </form>
+            {% else %}
+              <form style="display:inline;" method="post" action="/trackers/{{ tracker.id }}/revoke/">{% csrf_token %}
+                <button class="btn btn-danger btn-sm" type="submit">❌ Revoke tracker</button>
+              </form>
+            {% endif %}
+          {% endif %}
+          {% if user.is_superuser %}
+            <form style="display:inline;" method="post" action="/trackers/{{ tracker.id }}/ship/">{% csrf_token %}
+              <button class="btn btn-success btn-sm" type="submit">🚀 Ship to εxodus</button>
             </form>
           {% endif %}
         {% endif %}
