@@ -2,12 +2,12 @@ from django.contrib.auth.models import User
 from django.test import TestCase, Client, RequestFactory
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, PermissionDenied
 from .models import Tracker, Capability, Advertising, \
     Analytic, Network, TrackerCategory, TrackerApproval
 from io import BytesIO, StringIO
 from unittest.mock import patch
-from .views import approve, revoke
+from .views import approve, revoke, ship
 
 
 class TrackerModelTests(TestCase):
@@ -834,6 +834,62 @@ class RevokeTrackerViewTests(TestCase):
 
         self.assertEquals(response.status_code, 302)
         self.assertEquals(self.tracker.approvers(), [self.user.username])
+
+
+class ShipTrackerViewTests(TestCase):
+    def setUp(self):
+        self.tracker = Tracker.objects.create(
+            name='tracker_1',
+            code_signature='code_1',
+            network_signature='network_1',
+            website='https://website1',
+            is_in_exodus=False
+        )
+        self.factory = RequestFactory()
+
+    def test_without_login_gets_rejected(self):
+        c = Client()
+        response = c.post('/trackers/{}/ship/'.format(self.tracker))
+        self.assertEquals(response.status_code, 403)
+
+    def test_without_super_user_gets_rejected(self):
+        user = User.objects.create_user(
+            username='testuser1', password='12345')
+
+        request = self.factory.post(
+            '/trackers/{}/ship/'.format(self.tracker))
+        request.user = user
+        with self.assertRaises(PermissionDenied):
+            ship(request, self.tracker.id)
+
+        updated_tracker = Tracker.objects.get(id=self.tracker.id)
+        self.assertEquals(updated_tracker.is_in_exodus, False)
+
+    def test_with_login_that_is_in_exodus_changed(self):
+        super_user = User.objects.create_superuser(
+            username='testuser1', password='12345', email='toto')
+
+        request = self.factory.post(
+            '/trackers/{}/ship/'.format(self.tracker))
+        request.user = super_user
+        response = ship(request, self.tracker.id)
+
+        updated_tracker = Tracker.objects.get(id=self.tracker.id)
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(updated_tracker.is_in_exodus, True)
+
+    def test_get_request_does_not_do_anything(self):
+        super_user = User.objects.create_superuser(
+            username='testuser1', password='12345', email='toto')
+
+        request = self.factory.get(
+            '/trackers/{}/ship/'.format(self.tracker))
+        request.user = super_user
+        response = ship(request, self.tracker.id)
+
+        updated_tracker = Tracker.objects.get(id=self.tracker.id)
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(updated_tracker.is_in_exodus, False)
 
 
 class ExportTrackerListViewTests(TestCase):

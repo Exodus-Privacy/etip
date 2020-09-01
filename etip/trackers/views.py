@@ -6,6 +6,8 @@ from django.core.exceptions import ValidationError, PermissionDenied
 
 from .models import Tracker, TrackerApproval
 
+import reversion
+
 
 def index(request):
     try:
@@ -119,4 +121,26 @@ def revoke(request, id):
         approver=request.user
     )
     approval.delete()
+    return redirect('/trackers/{}'.format(tracker.id))
+
+
+def ship(request, id):
+    if request.method != 'POST':
+        return redirect('/')
+
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        raise PermissionDenied
+
+    try:
+        tracker = Tracker.objects.get(pk=id)
+    except (Tracker.DoesNotExist, ValidationError):
+        raise Http404("Tracker does not exist")
+
+    with reversion.create_revision():
+        tracker.is_in_exodus = True
+        tracker.save()
+
+        reversion.set_user(request.user)
+        reversion.set_comment("Shipped to exodus")
+
     return redirect('/trackers/{}'.format(tracker.id))
