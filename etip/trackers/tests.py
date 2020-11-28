@@ -398,7 +398,7 @@ class IndexTrackerListViewTests(TestCase):
         tracker_2.save()
 
         c = Client()
-        response = c.get('/')
+        response = c.get('/trackers/all')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, tracker_1.name, 1)
         self.assertContains(response, tracker_2.name, 1)
@@ -422,7 +422,7 @@ class IndexTrackerListViewTests(TestCase):
         tracker_2.save()
 
         c = Client()
-        response = c.get('/', {'tracker_name': 'match'})
+        response = c.get('/trackers/all', {'tracker_name': 'match'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, tracker_1.name, 1)
         self.assertNotContains(response, tracker_2.name)
@@ -460,7 +460,7 @@ class IndexTrackerListViewTests(TestCase):
         tracker_4.save()
 
         c = Client()
-        response = c.get('/', {'only_collisions': 'true'})
+        response = c.get('/trackers/all', {'only_collisions': 'true'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, tracker_1.name, 2)
         self.assertContains(response, tracker_3.name, 3)
@@ -484,7 +484,7 @@ class IndexTrackerListViewTests(TestCase):
         )
 
         c = Client()
-        response = c.get('/', {'trackers_select': 'exodus'})
+        response = c.get('/trackers/all', {'trackers_select': 'exodus'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['count'], 1)
         self.assertContains(response, tracker_in_exodus.name, 1)
@@ -506,7 +506,7 @@ class IndexTrackerListViewTests(TestCase):
         )
 
         c = Client()
-        response = c.get('/', {'trackers_select': 'etip'})
+        response = c.get('/trackers/all', {'trackers_select': 'etip'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['count'], 1)
         self.assertContains(response, tracker_not_in_exodus.name, 1)
@@ -528,7 +528,7 @@ class IndexTrackerListViewTests(TestCase):
         )
 
         c = Client()
-        response = c.get('/', {'trackers_select': 'all'})
+        response = c.get('/trackers/all', {'trackers_select': 'all'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['count'], 2)
         self.assertContains(response, tracker_not_in_exodus.name, 1)
@@ -552,7 +552,7 @@ class IndexTrackerListViewTests(TestCase):
         tracker_2.save()
 
         c = Client()
-        response = c.get('/', {'only_collisions': 'true'})
+        response = c.get('/trackers/all', {'only_collisions': 'true'})
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, tracker_1.name)
         self.assertNotContains(response, tracker_2.name)
@@ -571,7 +571,7 @@ class IndexTrackerListViewTests(TestCase):
 
         c = Client()
         response = c.get(
-            '/',
+            '/trackers/all',
             {'tracker_name': 'Ac', 'page': 2}
         )
         self.assertEqual(response.status_code, 200)
@@ -593,7 +593,7 @@ class IndexTrackerListViewTests(TestCase):
 
         c = Client()
         response = c.get(
-            '/',
+            '/trackers/all',
             {'tracker_name': 'Ac', 'only_collisions': 'true', 'page': 2}
         )
         self.assertEqual(response.status_code, 200)
@@ -625,7 +625,7 @@ class IndexTrackerApprovalTests(TestCase):
         self.c = Client()
 
     def test_with_approved_filter_without_approved(self):
-        response = self.c.get('/', {'approve_select': 'approved'})
+        response = self.c.get('/trackers/all', {'approve_select': 'approved'})
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.tracker_1.name)
         self.assertNotContains(response, self.tracker_2.name)
@@ -639,7 +639,29 @@ class IndexTrackerApprovalTests(TestCase):
         TrackerApproval.objects.create(
             approver=self.user_2, tracker=self.tracker_2)
 
-        response = self.c.get('/', {'approve_select': 'approved'})
+        response = self.c.get('/trackers/all', {'approve_select': 'approved'})
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.tracker_1.name)
+        self.assertContains(response, self.tracker_2.name)
+        self.assertEqual(response.context['count'], 1)
+
+    def test_approved_page_without_approved(self):
+        response = self.c.get('/trackers/approved')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'No trackers are available.')
+        self.assertNotContains(response, self.tracker_1.name)
+        self.assertNotContains(response, self.tracker_2.name)
+        self.assertEqual(response.context['count'], 0)
+
+    def test_approved_pages_and_approved_tracker(self):
+        TrackerApproval.objects.create(
+            approver=self.user_1, tracker=self.tracker_1)
+        TrackerApproval.objects.create(
+            approver=self.user_1, tracker=self.tracker_2)
+        TrackerApproval.objects.create(
+            approver=self.user_2, tracker=self.tracker_2)
+
+        response = self.c.get('/trackers/approved')
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.tracker_1.name)
         self.assertContains(response, self.tracker_2.name)
@@ -653,7 +675,8 @@ class IndexTrackerApprovalTests(TestCase):
         TrackerApproval.objects.create(
             approver=self.user_2, tracker=self.tracker_2)
 
-        response = self.c.get('/', {'approve_select': 'need_review'})
+        response = self.c.get(
+            '/trackers/all', {'approve_select': 'need_review'})
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.tracker_2.name)
         self.assertContains(response, self.tracker_1.name)
@@ -663,10 +686,25 @@ class IndexTrackerApprovalTests(TestCase):
         TrackerApproval.objects.create(
             approver=self.user_1, tracker=self.tracker_1)
 
-        response = self.c.get('/', {'approve_select': 'no_approvals'})
+        response = self.c.get(
+            '/trackers/all', {'approve_select': 'no_approvals'})
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.tracker_1.name)
         self.assertContains(response, self.tracker_2.name)
+        self.assertEqual(response.context['count'], 1)
+
+    def test_with_review_page_and_approved_tracker(self):
+        TrackerApproval.objects.create(
+            approver=self.user_1, tracker=self.tracker_1)
+        TrackerApproval.objects.create(
+            approver=self.user_1, tracker=self.tracker_2)
+        TrackerApproval.objects.create(
+            approver=self.user_2, tracker=self.tracker_2)
+
+        response = self.c.get('/trackers/review')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.tracker_2.name)
+        self.assertContains(response, self.tracker_1.name)
         self.assertEqual(response.context['count'], 1)
 
 
