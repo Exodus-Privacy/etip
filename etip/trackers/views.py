@@ -73,6 +73,46 @@ def display_tracker(request, id):
     return render(request, 'tracker.html', {'tracker': tracker})
 
 
+def review(request):
+    try:
+        trackers = Tracker.objects.filter(is_in_exodus=False).order_by('name')
+        trackers = list(t for t in trackers if t.approvals.count() == 1)
+
+        count = len(trackers)
+
+        paginator = Paginator(trackers, 20)
+        page = request.GET.get('page', 1)
+        trackers = paginator.get_page(page)
+    except Tracker.DoesNotExist:
+        raise Http404("trackers does not exist")
+
+    return render(request, 'tracker_review.html', {
+        'title': 'Waiting for review',
+        'trackers': trackers,
+        'count': count,
+    })
+
+
+def approved(request):
+    try:
+        trackers = Tracker.objects.filter(is_in_exodus=False).order_by('name')
+        trackers = list(t for t in trackers if t.approvals.count() >= 2)
+
+        count = len(trackers)
+
+        paginator = Paginator(trackers, 20)
+        page = request.GET.get('page', 1)
+        trackers = paginator.get_page(page)
+    except Tracker.DoesNotExist:
+        raise Http404("trackers does not exist")
+
+    return render(request, 'tracker_review.html', {
+        'title': 'Approved trackers',
+        'trackers': trackers,
+        'count': count,
+    })
+
+
 def export_tracker_list(request):
     trackers = Tracker.objects.order_by('name')
     trackers_list = list(trackers.values(*Tracker.EXPORTABLE_FIELDS))
