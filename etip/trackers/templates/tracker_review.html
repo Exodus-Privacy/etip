@@ -1,0 +1,137 @@
+{% extends "base.html"%}
+{% load url_replace %}
+{% block content %}
+<div class="col-xl-10 col-12">
+  <h2>
+    {{ title }} <span class="badge badge-info">{{ count }}</span>
+  </h2>
+</div>
+
+<div class="col-xl-10 col-12">
+  {% if trackers %}
+  <table class="table table-hover">
+    <thead class="">
+      <tr>
+        <td scope="col">Name</td>
+        <td scope="col">Creator</td>
+        <td scope="col">Approver(s)</td>
+        <td scope="col">Category</td>
+        <td scope="col">Code signature</td>
+        <td scope="col">Network signature</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for tracker in trackers %}
+      <tr>
+        <td>
+          <a href="{% url 'trackers:display_tracker' tracker.id %}">
+            <strong>{{ tracker.name }}</strong>
+          </a>
+          <div class="progress">
+            <div class="progress-bar progress-bar-striped bg-info" role="progressbar"
+              style="width: {{ tracker.progress }}%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"
+              data-toggle="tooltip" data-placement="right" data-html="true" title="
+                      Missing fields:
+                      <ul>
+                          {% for f in tracker.missing_fields %}
+                            <li>{{f}}</li>
+                          {% endfor %}
+                      </ul>
+                    ">
+            </div>
+          </div>
+        </td>
+        <td>
+          {% if user.is_authenticated and user.get_username == tracker.creator.username %}
+          <b>{{ tracker.creator.username | default:"/" }}</b>
+          {% else %}
+          {{ tracker.creator.username | default:"/" }}
+          {% endif %}
+        </td>
+        <td>
+          {% for a in tracker.approvers %}
+          {% if user.is_authenticated and user.get_username == a %}
+          ✔️ <b>{{ a }}</b>
+          {% else %}
+          ✔️ {{ a }}
+          {% endif %}
+          {% if not loop.last %}
+          <br>
+          {% endif %}
+          {% endfor %}
+        </td>
+        <td>
+          {% for c in tracker.category.all %}
+          <span class="badge badge-primary">{{ c.name }}</span>
+          {% endfor %}
+        </td>
+        <td>
+          {% if tracker.code_signature == '' %}
+          <div class="alert alert-warning">
+            <strong>⚠️</strong> <b>Missing signature</b>
+          </div>
+          {% endif %}
+          <code>{{ tracker.code_signature|truncatechars:36 }}</code>
+          {% if tracker.get_trackers_with_code_signature_collision %}
+          <div class="alert alert-warning">
+            <strong>⚠️</strong> <b>Collision detected</b> with:
+            <ul>
+              {% for c in tracker.get_trackers_with_code_signature_collision %}
+              <li><a href="{% url 'trackers:display_tracker' c.id %}">{{ c }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+        </td>
+        <td>
+          <code>{{ tracker.network_signature|truncatechars:36 }}</code>
+          {% if tracker.get_trackers_with_network_signature_collision %}
+          <div class="alert alert-warning">
+            <strong>⚠️</strong> <b>Collision detected</b> with:
+            <ul>
+              {% for c in tracker.get_trackers_with_network_signature_collision %}
+              <li><a href="{% url 'trackers:display_tracker' c.id %}">{{ c }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div>
+    <ul class="pagination pagination-sm justify-content-center">
+      {% if trackers.has_previous %}
+      <li class="page-item"><a class="page-link" href="?{% url_replace 'page' 1 %}">First</a></li>
+      <li class="page-item"><a class="page-link"
+          href="?{% url_replace 'page' trackers.previous_page_number %}">Previous</a></li>
+      {% else %}
+      <li class="page-item disabled"><a class="page-link" href="#">First</a></li>
+      <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+      {% endif %}
+      {% for i in trackers.paginator.page_range %}
+      {% if i > trackers.number|add:'-5' and i < trackers.number|add:'5' %}
+      {% if i == trackers.number %}
+      <li class="page-item active"> <a class="page-link" href="?{% url_replace 'page' i %}">{{ i }}</a> </li>
+      {% else %}
+      <li class="page-item"> <a class="page-link" href="?{% url_replace 'page' i %}">{{ i }}</a> </li>
+      {% endif %}
+      {% endif %}
+      {% endfor %}
+      {% if trackers.has_next %}
+      <li class="page-item"><a class="page-link"
+          href="?{% url_replace 'page' trackers.next_page_number %}">&nbsp&nbspNext&nbsp&nbsp</a></li>
+      <li class="page-item"><a class="page-link"
+          href="?{% url_replace 'page' trackers.paginator.num_pages %}">Last&nbsp</a></li>
+      {% else %}
+      <li class="page-item disabled"><a class="page-link" href="#">&nbsp&nbspNext&nbsp&nbsp</a></li>
+      <li class="page-item disabled"><a class="page-link" href="">Last&nbsp</a></li>
+      {% endif %}
+    </ul>
+  </div>
+  {% else %}
+  <p>No trackers are available.</p>
+  {% endif %}
+</div>
+{% endblock %}

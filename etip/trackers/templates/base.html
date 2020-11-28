@@ -27,10 +27,25 @@
     <a class="navbar-brand" href="/">
       <span class="h2">εxodus</span> <span class="small text-muted">ETIP v1.6</span>
     </a>
-    <div class="ml-auto">
-      <a class="btn btn-light btn-sm mr-lg-1 ml-lg-1" href="{% url 'admin:trackers_tracker_add' %}" role="button">Add new tracker</a>
-      <a class="btn btn-light btn-sm mr-lg-1 ml-lg-1" href="{% url 'admin:login' %}" role="button">{% if not user.is_authenticated %}Login{% else %}Admin{% endif %}</a>
-      <a class="btn btn-light btn-sm mr-lg-1 ml-xl-1" target="_blank" rel="noreferrer" href="https://github.com/Exodus-Privacy/etip/" role="button">GitHub</a>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Trackers
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="{% url 'trackers:index' %}">All trackers</a>
+            <a class="dropdown-item" href="{% url 'trackers:review' %}">Waiting for second review</a>
+            <a class="dropdown-item" href="{% url 'trackers:approved' %}">Approved</a>
+          </div>
+        </li>
+      </ul>
+      <div class="ml-auto">
+        <a class="btn btn-light btn-sm mr-lg-1 ml-lg-1" href="{% url 'admin:trackers_tracker_add' %}" role="button">Add new tracker</a>
+        <a class="btn btn-light btn-sm mr-lg-1 ml-lg-1" href="{% url 'admin:login' %}" role="button">{% if not user.is_authenticated %}Login{% else %}Admin{% endif %}</a>
+        <a class="btn btn-light btn-sm mr-lg-1 ml-xl-1" target="_blank" rel="noreferrer" href="https://github.com/Exodus-Privacy/etip/" role="button">GitHub</a>
+      </div>
     </div>
   </nav>
   <br>
