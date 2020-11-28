@@ -1,0 +1,48 @@
+{% extends "base.html"%}
+{% block content %}
+<div class="col-xl-10 col-12">
+  <h2 class="text-center">
+    Welcome to
+    <b>E</b>xodus
+    <b>T</b>racker
+    <b>I</b>nvestigation
+    <b>P</b>latform
+  </h2>
+</div>
+<div class="col-xl-10 col-12">
+  <h3 class="mt-4">What is ETIP?</h3>
+  <p>ETIP is meant to ease investigations on tracker detection for the platform <a target="_blank"
+      href="https://reports.exodus-privacy.eu.org">εxodus</a>.</p>
+  <p>It offers the following features:</p>
+  <ul>
+    <li>track all modifications on trackers</li>
+    <li>detect rules collisions for both network and code signature</li>
+  </ul>
+</div>
+<div class="col-xl-10 col-12">
+  <h3 class="mt-4">How to contribute?</h3>
+  <p>If you wish to help us identify new trackers, you can easily <a target="_blank" rel="noreferrer"
+      href="https://github.com/Exodus-Privacy/etip/#contribute-to-the-identification-of-trackers">request an ETIP
+      account</a>.</p>
+  <p>Once you have an account, you can:</p>
+  <div class="row">
+    <div class="col-12 col-md-4 mb-4 text-center">
+      <p>Create new trackers profiles</p>
+      <a class="btn btn-primary" href="{% url 'admin:trackers_tracker_add' %}" role="button">Create new tracker</a>
+    </div>
+    <div class="col-12 col-md-4 mb-4 text-center">
+      <p>Extend the content of existing trackers profiles</p>
+      <a class="btn btn-primary" href="{% url 'trackers:index' %}" role="button">See all trackers</a>
+    </div>
+    <div class="col-12 col-md-4 mb-4 text-center">
+      <p>Review trackers before they are sent to εxodus</p>
+      <a class="btn btn-primary" href="{% url 'trackers:review' %}" role="button">Review trackers</a>
+    </div>
+  </div>
+</div>
+<div class="col-xl-10 col-12">
+  <h3 class="mt-4">Curious about ETIP?</h3>
+  <p>ETIP is free and open source, feel free to check <a target="_blank" rel="noreferrer"
+      href="https://github.com/Exodus-Privacy/etip/">its GitHub page</a>.</p>
+</div>
+{% endblock %}

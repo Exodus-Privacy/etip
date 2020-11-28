@@ -9,6 +9,10 @@ from .models import Tracker, TrackerApproval
 import reversion
 
 
+def home(request):
+    return render(request, 'home.html')
+
+
 def index(request):
     try:
         # TODO: Use a Django Form instead ?
