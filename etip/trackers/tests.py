@@ -67,6 +67,26 @@ class TrackerModelTests(TestCase):
         except ValidationError:
             self.fail("full_clean() raised unexpectedly")
 
+    def test_clean_fields_with_space_in_network_signature(self):
+        tracker = Tracker(
+            name="tracker1",
+            website="http://example.com",
+            network_signature="toto.com | titi.com"
+        )
+        msg = "Must not contain spaces"
+        with self.assertRaisesRegexp(ValidationError, msg):
+            tracker.full_clean()
+
+    def test_clean_fields_with_space_in_code_signature(self):
+        tracker = Tracker(
+            name="tracker1",
+            website="http://example.com",
+            code_signature="com.toto | com.titi"
+        )
+        msg = "Must not contain spaces"
+        with self.assertRaisesRegexp(ValidationError, msg):
+            tracker.full_clean()
+
     def test_clean_fields_with_name_already_existing(self):
         existing_tracker = Tracker(
             name="toto",

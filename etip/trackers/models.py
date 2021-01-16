@@ -84,6 +84,15 @@ class Tracker(models.Model):
 
     def clean_fields(self, exclude=None):
         super().clean_fields(exclude=exclude)
+        spaces_errors = []
+        if ' ' in self.code_signature:
+            spaces_errors.append('code_signature')
+        if ' ' in self.network_signature:
+            spaces_errors.append('network_signature')
+        if spaces_errors:
+            raise ValidationError(
+                {err: "Must not contain spaces." for err in spaces_errors})
+
         regex_errors = []
         try:
             re.compile(self.code_signature)
