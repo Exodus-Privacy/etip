@@ -52,6 +52,7 @@ class RestfulApiGetAllTrackersTests(APITestCase):
             'code_signature': tracker.code_signature,
             'network_signature': tracker.network_signature,
             'website': tracker.website,
+            'documentation': '',
             'is_in_exodus': tracker.is_in_exodus,
             'category': [{'name': 'Ads'}, {'name': 'Location'}],
             'maven_repository': tracker.maven_repository,

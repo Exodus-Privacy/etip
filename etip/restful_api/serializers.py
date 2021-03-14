@@ -18,6 +18,7 @@ class TrackerSerializer(serializers.ModelSerializer):
           'name',
           'category',
           'description',
+          'documentation',
           'is_in_exodus',
           'code_signature',
           'network_signature',
