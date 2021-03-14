@@ -3,6 +3,7 @@ import uuid
 
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
 from django.contrib.auth.models import User
 from reversion.models import Version
 
@@ -63,6 +64,7 @@ class Tracker(models.Model):
     category = models.ManyToManyField(TrackerCategory, blank=True)
     is_in_exodus = models.BooleanField(default=False)
     api_key_ids = models.CharField(max_length=1000, default='', blank=True)
+    documentation = models.CharField(max_length=500, default='', blank=True)
     capability = models.ManyToManyField(Capability, blank=True)
     advertising = models.ManyToManyField(Advertising, blank=True)
     analytic = models.ManyToManyField(Analytic, blank=True)
@@ -85,6 +87,25 @@ class Tracker(models.Model):
 
     def clean_fields(self, exclude=None):
         super().clean_fields(exclude=exclude)
+
+        if self.documentation:
+            if (
+                ' ' in self.documentation or
+                ';' in self.documentation or
+                ',,' in self.documentation
+            ):
+                raise ValidationError(
+                    {'documentation': 'Must be a comma-separated list.'})
+
+            links = self.documentation.split(',')
+            validate = URLValidator()
+            for link in links:
+                try:
+                    validate(link)
+                except ValidationError:
+                    raise ValidationError(
+                        {'documentation': f'Invalid URL: {link}'})
+
         spaces_errors = []
         if ' ' in self.code_signature:
             spaces_errors.append('code_signature')

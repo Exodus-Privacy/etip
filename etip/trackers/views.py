@@ -74,7 +74,11 @@ def display_tracker(request, id):
     except (Tracker.DoesNotExist, ValidationError):
         raise Http404("Tracker does not exist")
 
-    return render(request, 'tracker.html', {'tracker': tracker})
+    documentation = tracker.documentation.split(',')
+    return render(
+        request, 'tracker.html',
+        {'tracker': tracker, 'documentation': documentation}
+    )
 
 
 def review(request):
