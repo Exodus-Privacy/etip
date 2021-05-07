@@ -76,9 +76,11 @@
         <th>Documentation</th>
         <td>
           <ul>
-            {% for link in documentation %}
-              <li><a href="{{ link }}">{{ link }}</a></li>
-            {% endfor %}
+            {% if documentation %}
+              {% for link in documentation %}
+                <li><a href="{{ link }}">{{ link }}</a></li>
+              {% endfor %}
+            {% endif %}
           </ul>
         </td>
       </tr>
