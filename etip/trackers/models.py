@@ -72,6 +72,7 @@ class Tracker(models.Model):
     group_id = models.CharField(max_length=500, default='', blank=True)
     gradle = models.CharField(max_length=500, default='', blank=True)
     comments = models.TextField(blank=True)
+    exodus_matches = models.PositiveIntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.name
