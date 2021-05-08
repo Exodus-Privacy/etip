@@ -98,7 +98,7 @@ class Tracker(models.Model):
                     raise ValidationError(
                         {
                             'documentation':
-                            f'Invalid URL: {link} (space-separated list)'
+                            f'Invalid URL: {link} (space-separated list).'
                         }
                     )
 
@@ -226,6 +226,13 @@ class Tracker(models.Model):
             return versions[len(versions) - 1].revision.user
         else:
             return None
+
+    def documentation_list(self):
+        if self.documentation:
+            documentation_list = self.documentation.split(' ')
+        else:
+            documentation_list = []
+        return documentation_list
 
 
 class TrackerApproval(models.Model):

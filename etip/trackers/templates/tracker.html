@@ -76,11 +76,9 @@
         <th>Documentation</th>
         <td>
           <ul>
-            {% if documentation %}
-              {% for link in documentation %}
-                <li><a href="{{ link }}">{{ link }}</a></li>
-              {% endfor %}
-            {% endif %}
+            {% for link in tracker.documentation_list %}
+              <li><a href="{{ link }}">{{ link }}</a></li>
+            {% endfor %}
           </ul>
         </td>
       </tr>

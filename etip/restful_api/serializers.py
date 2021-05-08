@@ -10,6 +10,7 @@ class TrackerCategorySerializer(serializers.ModelSerializer):
 
 class TrackerSerializer(serializers.ModelSerializer):
     category = TrackerCategorySerializer(read_only=True, many=True)
+    documentation = serializers.ListField(source='documentation_list')
 
     class Meta:
         model = Tracker
