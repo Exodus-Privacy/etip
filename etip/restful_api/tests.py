@@ -24,7 +24,7 @@ class RestfulApiGetAllTrackersTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
 
-    def test_get_trackers_with_details(self):
+    def test_get_trackers_with_details_without_documentation(self):
         self.force_autentication()
 
         tracker = Tracker.objects.create(
@@ -44,7 +44,7 @@ class RestfulApiGetAllTrackersTests(APITestCase):
         category2 = TrackerCategory.objects.create(name='Location')
         tracker.category.add(category1)
         tracker.category.add(category2)
-
+        self.maxDiff = None
         expected_tracker = [{
             'id': str(tracker.id),
             'name': tracker.name,
@@ -52,6 +52,51 @@ class RestfulApiGetAllTrackersTests(APITestCase):
             'code_signature': tracker.code_signature,
             'network_signature': tracker.network_signature,
             'website': tracker.website,
+            'documentation': [],
+            'is_in_exodus': tracker.is_in_exodus,
+            'category': [{'name': 'Ads'}, {'name': 'Location'}],
+            'maven_repository': tracker.maven_repository,
+            'group_id': tracker.group_id,
+            'artifact_id': tracker.artifact_id,
+            'gradle': tracker.gradle,
+        }]
+
+        response = self.client.get(self.TRACKERS_PATH)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.json(), expected_tracker)
+
+    def test_get_trackers_with_details(self):
+        self.force_autentication()
+
+        tracker = Tracker.objects.create(
+            name='tracker1',
+            description='description of the tracker',
+            code_signature='com.tracker1.ads',
+            network_signature='tracker1.com',
+            website='https://tracker1.com',
+            is_in_exodus=True,
+            maven_repository='https://jcenter.bintray.com/',
+            group_id='com.tracker1',
+            artifact_id='tracker',
+            gradle='com.tracker1:tracker:1.2.3',
+            documentation='https://t1.com http://t1.com/doc'
+        )
+
+        category1 = TrackerCategory.objects.create(name='Ads')
+        category2 = TrackerCategory.objects.create(name='Location')
+        tracker.category.add(category1)
+        tracker.category.add(category2)
+        self.maxDiff = None
+        expected_tracker = [{
+            'id': str(tracker.id),
+            'name': tracker.name,
+            'description': tracker.description,
+            'code_signature': tracker.code_signature,
+            'network_signature': tracker.network_signature,
+            'website': tracker.website,
+            'documentation': ['https://t1.com', 'http://t1.com/doc'],
             'is_in_exodus': tracker.is_in_exodus,
             'category': [{'name': 'Ads'}, {'name': 'Location'}],
             'maven_repository': tracker.maven_repository,

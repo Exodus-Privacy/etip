@@ -65,13 +65,23 @@
         </td>
       </tr>
       {% for name, value in tracker.get_fields %}
-        {% if value %}
+        {% if value and name != "documentation" %}
           <tr>
             <th class="text-capitalize">{{ name }}</th>
             <td>{% if name == "description" %}{{ value | markdown | safe }}{% else %}{{ value }}{% endif %}</td>
           </tr>
         {% endif %}
       {% endfor %}
+      <tr>
+        <th>Documentation</th>
+        <td>
+          <ul>
+            {% for link in tracker.documentation_list %}
+              <li><a href="{{ link }}">{{ link }}</a></li>
+            {% endfor %}
+          </ul>
+        </td>
+      </tr>
       <tr>
         <th>Category</th>
         <td>

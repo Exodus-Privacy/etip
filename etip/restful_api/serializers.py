@@ -10,6 +10,7 @@ class TrackerCategorySerializer(serializers.ModelSerializer):
 
 class TrackerSerializer(serializers.ModelSerializer):
     category = TrackerCategorySerializer(read_only=True, many=True)
+    documentation = serializers.ListField(source='documentation_list')
 
     class Meta:
         model = Tracker
@@ -18,6 +19,7 @@ class TrackerSerializer(serializers.ModelSerializer):
           'name',
           'category',
           'description',
+          'documentation',
           'is_in_exodus',
           'code_signature',
           'network_signature',

@@ -105,6 +105,56 @@ class TrackerModelTests(TestCase):
         with self.assertRaisesRegexp(ValidationError, error_message):
             new_tracker.full_clean()
 
+    def test_clean_fields_with_invalid_documentation_link(self):
+        new_tracker = Tracker(
+            name="toto",
+            code_signature="com.toto.ads",
+            website="http://toto.com",
+            documentation="toto.com"
+        )
+
+        error_message = "Invalid URL: toto.com"
+        with self.assertRaisesRegexp(ValidationError, error_message):
+            new_tracker.full_clean()
+
+    def test_clean_fields_with_invalid_documentation_links(self):
+        new_tracker = Tracker(
+            name="toto",
+            code_signature="com.toto.ads",
+            website="http://toto.com",
+            documentation="https://toto.com;https://toto.com/doc"
+        )
+
+        error_message = "Invalid URL: https://toto.com;https://toto.com/doc"
+        with self.assertRaisesRegexp(ValidationError, error_message):
+            new_tracker.full_clean()
+
+    def test_clean_fields_with_correct_documentation_link(self):
+        tracker = Tracker(
+            name="tracker1",
+            website="http://example.com",
+            network_signature="tracker.com",
+            documentation="https://toto.com"
+        )
+
+        try:
+            tracker.full_clean()
+        except ValidationError:
+            self.fail("full_clean() raised unexpectedly")
+
+    def test_clean_fields_with_correct_documentation_links(self):
+        tracker = Tracker(
+            name="tracker1",
+            website="http://example.com",
+            network_signature="tracker.com",
+            documentation="https://toto.com https://toto.com/doc"
+        )
+
+        try:
+            tracker.full_clean()
+        except ValidationError:
+            self.fail("full_clean() raised unexpectedly")
+
     def test_any_signature_collision_with_code_signature_one(self):
         existing_tracker = Tracker(
             name="toto",
