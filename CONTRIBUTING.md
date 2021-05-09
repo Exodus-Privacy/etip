@@ -18,7 +18,7 @@ You need to make sure your changes do not break the existing tests.
 
 You can execute the tests with the following command:
 
-```
+```sh
 source venv/bin/activate
 cd etip
 python manage.py test --settings=etip.settings.dev
