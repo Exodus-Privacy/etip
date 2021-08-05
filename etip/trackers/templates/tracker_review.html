@@ -18,6 +18,7 @@
         <td scope="col">Category</td>
         <td scope="col">Code signature</td>
         <td scope="col">Network signature</td>
+        <td scope="col">Matches</td>
       </tr>
     </thead>
     <tbody>
@@ -95,6 +96,9 @@
             </ul>
           </div>
           {% endif %}
+        </td>
+        <td>
+          {{ tracker.exodus_matches | default:"/" }}
         </td>
       </tr>
       {% endfor %}
