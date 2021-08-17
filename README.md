@@ -15,36 +15,6 @@ If you wish to help us identify new trackers, you can **request an ETIP account*
 
 If you want to contribute to this project, you can refer to [this documentation](CONTRIBUTING.md).
 
-## API
-
-An API is available to help administrate the ETIP database.
-
-### Authenticate
-
-```sh
-POST /api/get-auth-token/
-```
-
-Example:
-
-```sh
-curl -X POST http://localhost:8000/api/get-auth-token/ --data "username=admin&password=testtest"
-```
-
-You need to include your token as an `Authorization` header in all subsequent requests.
-
-### Get trackers
-
-```sh
-GET /api/trackers/
-```
-
-Example:
-
-```sh
-curl -X GET http://localhost:8000/api/trackers/ -H 'Authorization: Token <your-token>'
-```
-
 ## Development environment
 
 ### Installation
@@ -118,3 +88,33 @@ python manage.py compare_with_exodus
 Note: for now, it only compares with local trackers having the flag `is_in_exodus`.
 
 The default εxodus instance queried is the public one available at <https://reports.exodus-privacy.eu.org> (see `--exodus-hostname` parameter).
+
+## Administration API
+
+An API is available to help administrate the ETIP database.
+
+### Authenticate
+
+```sh
+POST /api/get-auth-token/
+```
+
+Example:
+
+```sh
+curl -X POST http://localhost:8000/api/get-auth-token/ --data "username=admin&password=testtest"
+```
+
+You need to include your token as an `Authorization` header in all subsequent requests.
+
+### Get trackers
+
+```sh
+GET /api/trackers/
+```
+
+Example:
+
+```sh
+curl -X GET http://localhost:8000/api/trackers/ -H 'Authorization: Token <your-token>'
+```
