@@ -9,46 +9,11 @@ ETIP is meant to ease investigations on tracker detection. For the moment, it of
 
 ## Contribute to the identification of trackers
 
-If you wish to help us identify new trackers, you can **request an ETIP account** by sending a username and an email address to etip@exodus-privacy.eu.org
-
-You can also take a look at to the following repositories:
-
-* <https://github.com/YalePrivacyLab/tracker-profiles>
-* <https://github.com/jawz101/potentialTrackers>
+If you wish to help us identify new trackers, you can **request an ETIP account** by sending a username and an email address to [etip@exodus-privacy.eu.org](mailto:etip@exodus-privacy.eu.org).
 
 ## Contributing to ETIP development
 
 If you want to contribute to this project, you can refer to [this documentation](CONTRIBUTING.md).
-
-## API
-
-An API is available to help administrate the ETIP database.
-
-### Authenticate
-
-```sh
-POST /api/get-auth-token/
-```
-
-Example:
-
-```sh
-curl -X POST http://localhost:8000/api/get-auth-token/ --data "username=admin&password=testtest"
-```
-
-You need to include your token as an `Authorization` header in all subsequent requests.
-
-### Get trackers
-
-```sh
-GET /api/trackers/
-```
-
-Example:
-
-```sh
-curl -X GET http://localhost:8000/api/trackers/ -H 'Authorization: Token <your-token>'
-```
 
 ## Development environment
 
@@ -123,3 +88,33 @@ python manage.py compare_with_exodus
 Note: for now, it only compares with local trackers having the flag `is_in_exodus`.
 
 The default εxodus instance queried is the public one available at <https://reports.exodus-privacy.eu.org> (see `--exodus-hostname` parameter).
+
+## Administration API
+
+An API is available to help administrate the ETIP database.
+
+### Authenticate
+
+```sh
+POST /api/get-auth-token/
+```
+
+Example:
+
+```sh
+curl -X POST http://localhost:8000/api/get-auth-token/ --data "username=admin&password=testtest"
+```
+
+You need to include your token as an `Authorization` header in all subsequent requests.
+
+### Get trackers
+
+```sh
+GET /api/trackers/
+```
+
+Example:
+
+```sh
+curl -X GET http://localhost:8000/api/trackers/ -H 'Authorization: Token <your-token>'
+```
