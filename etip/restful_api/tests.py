@@ -44,7 +44,6 @@ class RestfulApiGetAllTrackersTests(APITestCase):
         category2 = TrackerCategory.objects.create(name='Location')
         tracker.category.add(category1)
         tracker.category.add(category2)
-        self.maxDiff = None
         expected_tracker = [{
             'id': str(tracker.id),
             'name': tracker.name,
@@ -88,7 +87,6 @@ class RestfulApiGetAllTrackersTests(APITestCase):
         category2 = TrackerCategory.objects.create(name='Location')
         tracker.category.add(category1)
         tracker.category.add(category2)
-        self.maxDiff = None
         expected_tracker = [{
             'id': str(tracker.id),
             'name': tracker.name,
