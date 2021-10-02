@@ -47,9 +47,6 @@ class Tracker(models.Model):
     MIN_SIGNATURE_SIZE = 4
     MIN_DESCRIPTION_SIZE = 180
     MIN_WEBSITE_SIZE = 3
-    EXPORTABLE_FIELDS = [
-        'name', 'code_signature', 'network_signature', 'website'
-    ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created = models.DateTimeField(auto_now_add=True)
@@ -233,6 +230,18 @@ class Tracker(models.Model):
         else:
             documentation_list = []
         return documentation_list
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'code_signature': self.code_signature,
+            'network_signature': self.network_signature,
+            'website': self.website,
+            'category': [c.name for c in self.category.all()],
+            'is_in_exodus': self.is_in_exodus,
+            'documentation': self.documentation_list()
+        }
 
 
 class TrackerApproval(models.Model):

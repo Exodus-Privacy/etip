@@ -1009,23 +1009,25 @@ class ExportTrackerListViewTests(TestCase):
             response.content.decode('utf-8'), {'trackers': []})
 
     def test_with_trackers(self):
-        tracker_1 = Tracker(
+        category = TrackerCategory.objects.create(name='analytics')
+        tracker_1 = Tracker.objects.create(
             name='tracker_1',
             code_signature='code_1',
             network_signature='network_1',
-            website='https://website1'
+            website='https://website1',
+            is_in_exodus=True
         )
 
-        tracker_2 = Tracker(
+        tracker_2 = Tracker.objects.create(
             name='tracker_2',
             code_signature='code_2',
             network_signature='network_2',
             website='https://website2',
-            description='description du tracker_2'
+            description='description du tracker_2',
+            documentation="https://toto.com https://toto.com/doc"
         )
 
-        tracker_1.save()
-        tracker_2.save()
+        tracker_1.category.set([category])
 
         c = Client()
         response = c.get('/trackers/export')
@@ -1036,16 +1038,27 @@ class ExportTrackerListViewTests(TestCase):
         expected_json = {
             'trackers': [
                 {
+                    'id': str(tracker_1.id),
                     'name': tracker_1.name,
                     'code_signature': tracker_1.code_signature,
                     'network_signature': tracker_1.network_signature,
-                    'website': tracker_1.website
+                    'website': tracker_1.website,
+                    'documentation': [],
+                    'category': ['analytics'],
+                    'is_in_exodus': tracker_1.is_in_exodus
                 },
                 {
+                    'id': str(tracker_2.id),
                     'name': tracker_2.name,
                     'code_signature': tracker_2.code_signature,
                     'network_signature': tracker_2.network_signature,
-                    'website': tracker_2.website
+                    'website': tracker_2.website,
+                    'documentation': [
+                        'https://toto.com',
+                        'https://toto.com/doc'
+                    ],
+                    'category': [],
+                    'is_in_exodus': tracker_2.is_in_exodus
                 }
             ]
         }
