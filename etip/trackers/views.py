@@ -119,7 +119,7 @@ def approved(request):
 
 def export_tracker_list(request):
     trackers = Tracker.objects.order_by('name')
-    trackers_list = list(trackers.values(*Tracker.EXPORTABLE_FIELDS))
+    trackers_list = [tracker.serialize() for tracker in trackers]
     response = JsonResponse(dict(trackers=trackers_list))
     response['Content-Disposition'] = 'attachment; filename=trackers.json'
     return response
