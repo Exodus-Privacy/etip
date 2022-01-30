@@ -13,4 +13,5 @@ gunicorn = "~=19.7.1"
 markdown = "~=3.1.1"
 
 [dev-packages]
-
+flake8 = "~=4.0"
+autopep8 = "~=1.6"
