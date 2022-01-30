@@ -17,6 +17,14 @@ If you want to contribute to this project, you can refer to [this documentation]
 
 ## Development environment
 
+### Requirements
+
+You need [pipenv](https://packaging.python.org/en/latest/tutorials/managing-dependencies/#managing-dependencies) to run this project locally
+
+```sh
+pip install pipenv
+```
+
 ### Installation
 
 Clone the project
@@ -25,24 +33,21 @@ Clone the project
 git clone https://github.com/Exodus-Privacy/etip.git
 ```
 
-Create the Python virtual env
+Install dependencies in pipenv environment
 
 ```sh
 cd etip
-virtualenv venv -p python3
-source venv/bin/activate
-```
-
-Install dependencies
-
-```sh
-pip install -r requirements.txt
+pipenv install --dev
 ```
 
 Create the database
 
 ```sh
-export DJANGO_SETTINGS_MODULE=etip.settings.dev
+echo "DJANGO_SETTINGS_MODULE=etip.settings.dev" > .env
+
+# enter into python environment
+pipenv shell
+
 cd etip/
 python manage.py migrate
 
@@ -62,14 +67,12 @@ python manage.py createsuperuser
 ### Run the tests
 
 ```sh
-export DJANGO_SETTINGS_MODULE=etip.settings.dev
 python manage.py test
 ```
 
 ### Start the server
 
 ```sh
-export DJANGO_SETTINGS_MODULE=etip.settings.dev
 python manage.py runserver
 ```
 
