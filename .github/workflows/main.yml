@@ -34,6 +34,9 @@ jobs:
       - name: Lint with flake8
         run: |
           flake8 etip/
+      - name: Check vulnerabilites in dependencies
+        run: |
+          pipenv check
       - name: Run Tests
         run: |
           cd etip
