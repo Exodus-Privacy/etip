@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "==2.2.26"
+requests = "~=2.27"
+django-bootstrap3 = "~=21.2"
+django-reversion = "~=4.0.2"
+djangorestframework = "~=3.11.2"
+gunicorn = "~=19.7.1"
+markdown = "~=3.1.1"
+
+[dev-packages]
+
