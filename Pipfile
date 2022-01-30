@@ -8,9 +8,9 @@ django = "==2.2.26"
 requests = "~=2.27"
 django-bootstrap3 = "~=21.2"
 django-reversion = "~=4.0.2"
-djangorestframework = "~=3.11.2"
+djangorestframework = "~=3.13.0"
 gunicorn = "~=19.10"
-markdown = "~=3.1.1"
+markdown = "~=3.3.6"
 
 [dev-packages]
 flake8 = "~=4.0"
