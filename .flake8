@@ -1,2 +1,3 @@
 [flake8]
 exclude = ./etip/*/migrations, ./etip/*/settings
+max-line-length = 100
