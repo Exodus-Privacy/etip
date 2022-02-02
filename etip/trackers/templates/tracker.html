@@ -10,6 +10,11 @@
         This tracker can be added to εxodus! 🎉
       </div>
     {% endif %}
+    {% if tracker.exodus_matches == 0 %}
+      <div class="alert alert-warning">
+        ⚠️ This tracker signature does not appear in any report in εxodus!
+      </div>
+    {% endif %}
     <div class="mt-3 mb-3">
       <a class="btn btn-primary btn-sm" href="/admin/trackers/tracker/{{ tracker.id }}/change/">🖋️ Edit tracker</a>
       {% if user.is_authenticated %}
