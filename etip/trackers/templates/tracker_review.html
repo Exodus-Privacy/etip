@@ -98,7 +98,7 @@
           {% endif %}
         </td>
         <td>
-          {{ tracker.exodus_matches | default:"/" }}
+          {% if tracker.exodus_matches is not None %}{{ tracker.exodus_matches }}{% else %}/{% endif %}
         </td>
       </tr>
       {% endfor %}
