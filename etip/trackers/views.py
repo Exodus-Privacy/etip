@@ -79,7 +79,7 @@ def display_tracker(request, id):
 
 def review(request):
     try:
-        trackers = Tracker.objects.filter(is_in_exodus=False).order_by('name')
+        trackers = Tracker.objects.filter(is_in_exodus=False).order_by('-exodus_matches')
         trackers = list(t for t in trackers if t.approvals.count() == 1)
 
         count = len(trackers)
