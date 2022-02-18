@@ -188,3 +188,47 @@ def ship(request, id):
         reversion.set_comment("Shipped to exodus")
 
     return redirect('/trackers/{}'.format(tracker.id))
+
+
+def needs_rework(request, id):
+    if request.method != 'POST':
+        return redirect('/')
+
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        raise PermissionDenied
+
+    try:
+        tracker = Tracker.objects.get(pk=id)
+    except (Tracker.DoesNotExist, ValidationError):
+        raise Http404("Tracker does not exist")
+
+    with reversion.create_revision():
+        tracker.needs_rework = True
+        tracker.save()
+
+        reversion.set_user(request.user)
+        reversion.set_comment("Set as 'needs rework'")
+
+    return redirect('/trackers/{}'.format(tracker.id))
+
+
+def needs_no_rework(request, id):
+    if request.method != 'POST':
+        return redirect('/')
+
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        raise PermissionDenied
+
+    try:
+        tracker = Tracker.objects.get(pk=id)
+    except (Tracker.DoesNotExist, ValidationError):
+        raise Http404("Tracker does not exist")
+
+    with reversion.create_revision():
+        tracker.needs_rework = False
+        tracker.save()
+
+        reversion.set_user(request.user)
+        reversion.set_comment("Set as 'rework was done'")
+
+    return redirect('/trackers/{}'.format(tracker.id))

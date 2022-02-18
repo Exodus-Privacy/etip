@@ -24,7 +24,7 @@ class TrackerModelAdmin(VersionAdmin):
         excluded = super().get_exclude(request, obj) or []
 
         if not request.user.is_superuser:
-            return excluded + ['is_in_exodus', 'exodus_matches']
+            return excluded + ['is_in_exodus', 'exodus_matches', 'needs_rework']
 
         return excluded
 

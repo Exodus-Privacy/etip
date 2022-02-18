@@ -15,6 +15,11 @@
         ⚠️ This tracker signature does not appear in any report in εxodus!
       </div>
     {% endif %}
+    {% if tracker.needs_rework %}
+      <div class="alert alert-warning">
+        ⚠️ This tracker needs some rework, please check the comments
+      </div>
+    {% endif %}
     <div class="mt-3 mb-3">
       <a class="btn btn-primary btn-sm" href="/admin/trackers/tracker/{{ tracker.id }}/change/">🖋️ Edit tracker</a>
       {% if user.is_authenticated %}
@@ -31,9 +36,18 @@
             {% endif %}
           {% endif %}
           {% if user.is_superuser %}
-            <form style="display:inline;" method="post" action="/trackers/{{ tracker.id }}/ship/">{% csrf_token %}
-              <button class="btn btn-success btn-sm" type="submit">🚀 Ship to εxodus</button>
-            </form>
+            {% if tracker.needs_rework %}
+              <form style="display:inline;" method="post" action="/trackers/{{ tracker.id }}/needs_no_rework/">{% csrf_token %}
+                <button class="btn btn-warning btn-sm" type="submit">🚧 Rework is done</button>
+              </form>
+            {% else %}
+              <form style="display:inline;" method="post" action="/trackers/{{ tracker.id }}/ship/">{% csrf_token %}
+                <button class="btn btn-success btn-sm" type="submit">🚀 Ship to εxodus</button>
+              </form>
+              <form style="display:inline;" method="post" action="/trackers/{{ tracker.id }}/needs_rework/">{% csrf_token %}
+                <button class="btn btn-danger btn-sm" type="submit">🚧 It needs rework</button>
+              </form>
+            {% endif %}
           {% endif %}
         {% endif %}
       {% endif %}
@@ -55,7 +69,15 @@
 
     <table class="table table-bordered table-striped">
       <tr>
-        <th style="width:20%">Creator</th>
+        <th style="width:20%">Status</th>
+        <td>
+            <span class="badge {{ tracker.status_color_class }}">
+              <b>{{ tracker.status }}</b>
+            </span>
+        </td>
+      </tr>
+      <tr>
+        <th>Creator</th>
         <td>{{ tracker.creator.username | default:"/" }}</td>
       </tr>
       <tr>
@@ -70,7 +92,7 @@
         </td>
       </tr>
       {% for name, value in tracker.get_fields %}
-        {% if value and name != "documentation" %}
+        {% if value and name != "documentation" and name != "needs_rework" %}
           <tr>
             <th class="text-capitalize">{{ name }}</th>
             <td>{% if name == "description" %}{{ value | markdown | safe }}{% else %}{{ value }}{% endif %}</td>
