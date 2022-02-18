@@ -12,5 +12,7 @@ urlpatterns = [
     path('trackers/<id>/approve/', views.approve, name='approve'),
     path('trackers/<id>/revoke/', views.revoke, name='revoke'),
     path('trackers/<id>/ship/', views.ship, name='ship'),
+    path('trackers/<id>/needs_rework/', views.needs_rework, name='needs_rework'),
+    path('trackers/<id>/needs_no_rework/', views.needs_no_rework, name='needs_no_rework'),
     path('trackers/export', views.export_tracker_list, name='export')
 ]

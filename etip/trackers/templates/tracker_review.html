@@ -13,6 +13,7 @@
     <thead class="">
       <tr>
         <td scope="col">Name</td>
+        <td scope="col">Status</td>
         <td scope="col">Creator</td>
         <td scope="col">Approver(s)</td>
         <td scope="col">Category</td>
@@ -41,6 +42,11 @@
                     ">
             </div>
           </div>
+        </td>
+        <td>
+          <span class="badge {{ tracker.status_color_class }}">
+            <b>{{ tracker.status }}</b>
+          </span>
         </td>
         <td>
           {% if user.is_authenticated and user.get_username == tracker.creator.username %}

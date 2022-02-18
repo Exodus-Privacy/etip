@@ -46,7 +46,7 @@
         <thead class="">
           <tr>
             <td scope="col">Name</td>
-            <td scope="col">In εxodus</td>
+            <td scope="col">Status</td>
             <td scope="col">Website</td>
             <td scope="col">Category</td>
             <td scope="col">Code signature</td>
@@ -74,7 +74,9 @@
                 </div>
               </td>
               <td>
-                <input type="checkbox" disabled="disabled" {% if tracker.is_in_exodus %}checked{% endif %}/>
+                <span class="badge {{ tracker.status_color_class }}">
+                  <b>{{ tracker.status }}</b>
+                </span>
               </td>
               <td>
                 <a target="_blank" rel="noreferrer" href="{{ tracker.website }}">www</a>

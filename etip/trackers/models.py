@@ -72,6 +72,7 @@ class Tracker(models.Model):
     gradle = models.CharField(max_length=500, default='', blank=True)
     comments = models.TextField(blank=True)
     exodus_matches = models.PositiveIntegerField(blank=True, null=True)
+    needs_rework = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -230,6 +231,33 @@ class Tracker(models.Model):
         else:
             documentation_list = []
         return documentation_list
+
+    def status(self):
+        if self.is_in_exodus:
+            return 'In εxodus'
+        if self.needs_rework:
+            return 'Needs rework'
+        if not self.code_signature:
+            return 'Missing signature'
+        if self.exodus_matches is None:
+            return 'Not analyzed'
+        if self.exodus_matches == 0:
+            return 'Unmatched in εxodus'
+
+        if self.approvals.count() < 2:
+            return 'Waiting for review'
+
+        return 'Approved'
+
+    def status_color_class(self):
+        if self.status() == 'In εxodus':
+            return 'badge-success'
+        if self.status() == 'Approved':
+            return 'badge-info'
+        if self.status() == 'Waiting for review':
+            return 'badge-warning'
+
+        return 'badge-danger'
 
     def serialize(self):
         return {

@@ -79,7 +79,7 @@ def display_tracker(request, id):
 
 def review(request):
     try:
-        trackers = Tracker.objects.filter(is_in_exodus=False).order_by('-exodus_matches')
+        trackers = Tracker.objects.filter(is_in_exodus=False).order_by('-exodus_matches', 'name')
         trackers = list(t for t in trackers if t.approvals.count() == 1)
 
         count = len(trackers)
@@ -99,7 +99,7 @@ def review(request):
 
 def approved(request):
     try:
-        trackers = Tracker.objects.filter(is_in_exodus=False).order_by('name')
+        trackers = Tracker.objects.filter(is_in_exodus=False).order_by('-exodus_matches', 'name')
         trackers = list(t for t in trackers if t.approvals.count() >= 2)
 
         count = len(trackers)
@@ -186,5 +186,49 @@ def ship(request, id):
 
         reversion.set_user(request.user)
         reversion.set_comment("Shipped to exodus")
+
+    return redirect('/trackers/{}'.format(tracker.id))
+
+
+def needs_rework(request, id):
+    if request.method != 'POST':
+        return redirect('/')
+
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        raise PermissionDenied
+
+    try:
+        tracker = Tracker.objects.get(pk=id)
+    except (Tracker.DoesNotExist, ValidationError):
+        raise Http404("Tracker does not exist")
+
+    with reversion.create_revision():
+        tracker.needs_rework = True
+        tracker.save()
+
+        reversion.set_user(request.user)
+        reversion.set_comment("Set as 'needs rework'")
+
+    return redirect('/trackers/{}'.format(tracker.id))
+
+
+def needs_no_rework(request, id):
+    if request.method != 'POST':
+        return redirect('/')
+
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        raise PermissionDenied
+
+    try:
+        tracker = Tracker.objects.get(pk=id)
+    except (Tracker.DoesNotExist, ValidationError):
+        raise Http404("Tracker does not exist")
+
+    with reversion.create_revision():
+        tracker.needs_rework = False
+        tracker.save()
+
+        reversion.set_user(request.user)
+        reversion.set_comment("Set as 'rework was done'")
 
     return redirect('/trackers/{}'.format(tracker.id))
