@@ -1,5 +1,8 @@
 *.pyc
 venv/
 etip/db.sqlite3
+
 .idea
 .vscode
+
+.env
