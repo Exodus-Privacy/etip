@@ -49,11 +49,11 @@ jobs:
   release:
     needs: build
     name: Create Github release
+    if: github.event_name == 'push' && github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Create release
-        if: github.event_name == 'push' && github.ref_type == 'tag'
         run: gh release create ${GITHUB_REF_NAME} --title ${GITHUB_REF_NAME} --generate-notes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
