@@ -14,16 +14,16 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version:
           - "3.9"
           - "3.10"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Dependencies
@@ -46,6 +46,12 @@ jobs:
           python manage.py test
         env:
           DJANGO_SETTINGS_MODULE: etip.settings.dev
+  release:
+    needs: build
+    name: Create Github release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
       - name: Create release
         if: github.event_name == 'push' && github.ref_type == 'tag'
         run: gh release create ${GITHUB_REF_NAME} --title ${GITHUB_REF_NAME} --generate-notes
