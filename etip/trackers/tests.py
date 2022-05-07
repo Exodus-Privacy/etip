@@ -30,7 +30,7 @@ class TrackerModelTests(TestCase):
             code_signature="*com.tracker.code"
         )
 
-        with self.assertRaisesRegexp(ValidationError, "Must be a valid regex"):
+        with self.assertRaisesRegex(ValidationError, "Must be a valid regex"):
             tracker.full_clean()
 
     def test_clean_fields_with_correct_code_signature(self):
@@ -52,7 +52,7 @@ class TrackerModelTests(TestCase):
             network_signature="*.com"
         )
 
-        with self.assertRaisesRegexp(ValidationError, "Must be a valid regex"):
+        with self.assertRaisesRegex(ValidationError, "Must be a valid regex"):
             tracker.full_clean()
 
     def test_clean_fields_with_correct_network_signature(self):
@@ -74,7 +74,7 @@ class TrackerModelTests(TestCase):
             network_signature="toto.com | titi.com"
         )
         msg = "Must not contain spaces"
-        with self.assertRaisesRegexp(ValidationError, msg):
+        with self.assertRaisesRegex(ValidationError, msg):
             tracker.full_clean()
 
     def test_clean_fields_with_space_in_code_signature(self):
@@ -84,7 +84,7 @@ class TrackerModelTests(TestCase):
             code_signature="com.toto | com.titi"
         )
         msg = "Must not contain spaces"
-        with self.assertRaisesRegexp(ValidationError, msg):
+        with self.assertRaisesRegex(ValidationError, msg):
             tracker.full_clean()
 
     def test_clean_fields_with_name_already_existing(self):
@@ -102,7 +102,7 @@ class TrackerModelTests(TestCase):
         )
 
         error_message = "Tracker with this Name already exists."
-        with self.assertRaisesRegexp(ValidationError, error_message):
+        with self.assertRaisesRegex(ValidationError, error_message):
             new_tracker.full_clean()
 
     def test_clean_fields_with_invalid_documentation_link(self):
@@ -114,7 +114,7 @@ class TrackerModelTests(TestCase):
         )
 
         error_message = "Invalid URL: toto.com"
-        with self.assertRaisesRegexp(ValidationError, error_message):
+        with self.assertRaisesRegex(ValidationError, error_message):
             new_tracker.full_clean()
 
     def test_clean_fields_with_invalid_documentation_links(self):
@@ -126,7 +126,7 @@ class TrackerModelTests(TestCase):
         )
 
         error_message = "Invalid URL: https://toto.com;https://toto.com/doc"
-        with self.assertRaisesRegexp(ValidationError, error_message):
+        with self.assertRaisesRegex(ValidationError, error_message):
             new_tracker.full_clean()
 
     def test_clean_fields_with_correct_documentation_link(self):
@@ -167,7 +167,7 @@ class TrackerModelTests(TestCase):
             code_signature="toto.com",
         )
         new_tracker.save()
-        self.assertEquals(new_tracker.has_any_signature_collision(), True)
+        self.assertEqual(new_tracker.has_any_signature_collision(), True)
 
     def test_any_signature_collision_with_network_signature_one(self):
         existing_tracker = Tracker(
@@ -181,7 +181,7 @@ class TrackerModelTests(TestCase):
             network_signature="toto.com",
         )
         new_tracker.save()
-        self.assertEquals(new_tracker.has_any_signature_collision(), True)
+        self.assertEqual(new_tracker.has_any_signature_collision(), True)
 
     def test_any_signature_collision_containing_network_signature_one(self):
         existing_tracker = Tracker(
@@ -195,7 +195,7 @@ class TrackerModelTests(TestCase):
             network_signature="toto.com",
         )
         new_tracker.save()
-        self.assertEquals(new_tracker.has_any_signature_collision(), True)
+        self.assertEqual(new_tracker.has_any_signature_collision(), True)
 
     def test_any_signature_collision_without_collisions(self):
         existing_tracker = Tracker(
@@ -211,7 +211,7 @@ class TrackerModelTests(TestCase):
             code_signature="tata.com"
         )
         new_tracker.save()
-        self.assertEquals(new_tracker.has_any_signature_collision(), False)
+        self.assertEqual(new_tracker.has_any_signature_collision(), False)
 
     def test_code_collision_different_signature(self):
         existing_tracker = Tracker(
@@ -227,7 +227,7 @@ class TrackerModelTests(TestCase):
         new_tracker.save()
         collisions = \
             new_tracker.get_trackers_with_code_signature_collision()
-        self.assertEquals(collisions, [])
+        self.assertEqual(collisions, [])
 
     def test_code_collision_same_signature(self):
         existing_tracker_name = "toto"
@@ -244,7 +244,7 @@ class TrackerModelTests(TestCase):
         )
         new_tracker.save()
         collisions = new_tracker.get_trackers_with_code_signature_collision()
-        self.assertEquals(collisions, [existing_tracker])
+        self.assertEqual(collisions, [existing_tracker])
 
     def test_network_collision_same_signature(self):
         existing_tracker_name = "toto"
@@ -262,7 +262,7 @@ class TrackerModelTests(TestCase):
         new_tracker.save()
         collisions = \
             new_tracker.get_trackers_with_network_signature_collision()
-        self.assertEquals(collisions, [existing_tracker])
+        self.assertEqual(collisions, [existing_tracker])
 
     def test_network_collision_contains_signature(self):
         existing_tracker_name = "toto"
@@ -280,7 +280,7 @@ class TrackerModelTests(TestCase):
         new_tracker.save()
         collisions = \
             new_tracker.get_trackers_with_network_signature_collision()
-        self.assertEquals(collisions, [existing_tracker])
+        self.assertEqual(collisions, [existing_tracker])
 
     def test_code_collision_contains_signature(self):
         existing_tracker_name = "toto"
@@ -297,7 +297,7 @@ class TrackerModelTests(TestCase):
         )
         new_tracker.save()
         collisions = new_tracker.get_trackers_with_code_signature_collision()
-        self.assertEquals(collisions, [existing_tracker])
+        self.assertEqual(collisions, [existing_tracker])
 
     def test_code_collision_multiple_matches(self):
         signature = "toto.com"
@@ -320,7 +320,7 @@ class TrackerModelTests(TestCase):
         )
         new_tracker.save()
         collisions = new_tracker.get_trackers_with_code_signature_collision()
-        self.assertEquals(
+        self.assertEqual(
             collisions, [existing_tracker1, existing_tracker2])
 
     def test_network_collision_multiple_matches(self):
@@ -345,26 +345,26 @@ class TrackerModelTests(TestCase):
         new_tracker.save()
         collisions = \
             new_tracker.get_trackers_with_network_signature_collision()
-        self.assertEquals(
+        self.assertEqual(
             collisions, [existing_tracker1, existing_tracker2])
 
     def test_progress_empty_tracker(self):
         tracker = Tracker()
-        self.assertEquals(tracker.progress(), 0)
+        self.assertEqual(tracker.progress(), 0)
 
     def test_progress_tracker_with_signatures(self):
         tracker = Tracker(
             code_signature="toto",
             network_signature="toto",
         )
-        self.assertEquals(tracker.progress(), 20)
+        self.assertEqual(tracker.progress(), 20)
 
     def test_progress_tracker_with_short_signatures(self):
         tracker = Tracker(
             code_signature="tot",
             network_signature="tot",
         )
-        self.assertEquals(tracker.progress(), 0)
+        self.assertEqual(tracker.progress(), 0)
 
     def test_progress_tracker_with_signatures_and_website(self):
         tracker = Tracker(
@@ -372,7 +372,7 @@ class TrackerModelTests(TestCase):
             network_signature="toto",
             website="toto.com",
         )
-        self.assertEquals(tracker.progress(), 30)
+        self.assertEqual(tracker.progress(), 30)
 
     def test_missing_fields_empty_tracker(self):
         expected_output = [
@@ -392,7 +392,7 @@ class TrackerModelTests(TestCase):
         ]
 
         tracker = Tracker()
-        self.assertEquals(tracker.missing_fields(), expected_output)
+        self.assertEqual(tracker.missing_fields(), expected_output)
 
     def test_missing_fields_tracker_with_signatures(self):
         expected_output = [
@@ -413,7 +413,7 @@ class TrackerModelTests(TestCase):
             code_signature="toto",
             network_signature="toto",
         )
-        self.assertEquals(tracker.missing_fields(), expected_output)
+        self.assertEqual(tracker.missing_fields(), expected_output)
 
     def test_empty_list_when_no_approvers(self):
         tracker = Tracker.objects.create(
@@ -421,7 +421,7 @@ class TrackerModelTests(TestCase):
             code_signature="toto.com",
         )
 
-        self.assertEquals(tracker.approvers(), [])
+        self.assertEqual(tracker.approvers(), [])
 
     def test_returns_list_when_approvers(self):
         tracker = Tracker.objects.create(
@@ -435,7 +435,7 @@ class TrackerModelTests(TestCase):
         TrackerApproval.objects.create(approver=user_1, tracker=tracker)
         TrackerApproval.objects.create(approver=user_2, tracker=tracker)
 
-        self.assertEquals(
+        self.assertEqual(
             tracker.approvers(), [user_1.username, user_2.username])
 
     # TODO: Write test to get creator
@@ -446,7 +446,7 @@ class TrackerModelTests(TestCase):
             code_signature="toto.com",
         )
 
-        self.assertEquals(tracker.creator(), None)
+        self.assertEqual(tracker.creator(), None)
 
 
 class IndexTrackerListViewTests(TestCase):
@@ -885,7 +885,7 @@ class ApproveTrackerViewTests(TestCase):
     def test_without_login_gets_rejected(self):
         c = Client()
         response = c.post('/trackers/{}/approve/'.format(self.tracker))
-        self.assertEquals(response.status_code, 403)
+        self.assertEqual(response.status_code, 403)
 
     def test_with_login_that_approvers_changed(self):
         request = self.factory.post(
@@ -893,8 +893,8 @@ class ApproveTrackerViewTests(TestCase):
         request.user = self.user
         response = approve(request, self.tracker.id)
 
-        self.assertEquals(response.status_code, 302)
-        self.assertEquals(self.tracker.approvers(), [self.user.username])
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.tracker.approvers(), [self.user.username])
 
     def test_get_request_does_not_do_anything(self):
         request = self.factory.get(
@@ -902,8 +902,8 @@ class ApproveTrackerViewTests(TestCase):
         request.user = self.user
         response = approve(request, self.tracker.id)
 
-        self.assertEquals(response.status_code, 302)
-        self.assertEquals(self.tracker.approvers(), [])
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.tracker.approvers(), [])
 
 
 class RevokeTrackerViewTests(TestCase):
@@ -923,7 +923,7 @@ class RevokeTrackerViewTests(TestCase):
     def test_without_login_gets_rejected(self):
         c = Client()
         response = c.post('/trackers/{}/revoke/'.format(self.tracker))
-        self.assertEquals(response.status_code, 403)
+        self.assertEqual(response.status_code, 403)
 
     def test_with_login_that_approvers_changed(self):
         request = self.factory.post(
@@ -931,8 +931,8 @@ class RevokeTrackerViewTests(TestCase):
         request.user = self.user
         response = revoke(request, self.tracker.id)
 
-        self.assertEquals(response.status_code, 302)
-        self.assertEquals(self.tracker.approvers(), [])
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.tracker.approvers(), [])
 
     def test_get_request_does_not_do_anything(self):
         request = self.factory.get(
@@ -940,8 +940,8 @@ class RevokeTrackerViewTests(TestCase):
         request.user = self.user
         response = revoke(request, self.tracker.id)
 
-        self.assertEquals(response.status_code, 302)
-        self.assertEquals(self.tracker.approvers(), [self.user.username])
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.tracker.approvers(), [self.user.username])
 
 
 class ShipTrackerViewTests(TestCase):
@@ -958,7 +958,7 @@ class ShipTrackerViewTests(TestCase):
     def test_without_login_gets_rejected(self):
         c = Client()
         response = c.post('/trackers/{}/ship/'.format(self.tracker))
-        self.assertEquals(response.status_code, 403)
+        self.assertEqual(response.status_code, 403)
 
     def test_without_super_user_gets_rejected(self):
         user = User.objects.create_user(
@@ -971,7 +971,7 @@ class ShipTrackerViewTests(TestCase):
             ship(request, self.tracker.id)
 
         updated_tracker = Tracker.objects.get(id=self.tracker.id)
-        self.assertEquals(updated_tracker.is_in_exodus, False)
+        self.assertEqual(updated_tracker.is_in_exodus, False)
 
     def test_with_login_that_is_in_exodus_changed(self):
         super_user = User.objects.create_superuser(
@@ -983,8 +983,8 @@ class ShipTrackerViewTests(TestCase):
         response = ship(request, self.tracker.id)
 
         updated_tracker = Tracker.objects.get(id=self.tracker.id)
-        self.assertEquals(response.status_code, 302)
-        self.assertEquals(updated_tracker.is_in_exodus, True)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(updated_tracker.is_in_exodus, True)
 
     def test_get_request_does_not_do_anything(self):
         super_user = User.objects.create_superuser(
@@ -996,15 +996,15 @@ class ShipTrackerViewTests(TestCase):
         response = ship(request, self.tracker.id)
 
         updated_tracker = Tracker.objects.get(id=self.tracker.id)
-        self.assertEquals(response.status_code, 302)
-        self.assertEquals(updated_tracker.is_in_exodus, False)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(updated_tracker.is_in_exodus, False)
 
 
 class ExportTrackerListViewTests(TestCase):
     def test_without_trackers(self):
         c = Client()
         response = c.get('/trackers/export')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(
             response.content.decode('utf-8'), {'trackers': []})
 
@@ -1031,9 +1031,9 @@ class ExportTrackerListViewTests(TestCase):
 
         c = Client()
         response = c.get('/trackers/export')
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(response.get('Content-Disposition'),
-                          'attachment; filename=trackers.json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('Content-Disposition'),
+                         'attachment; filename=trackers.json')
         f = BytesIO(response.content)
         expected_json = {
             'trackers': [
@@ -1428,19 +1428,19 @@ class ImportCategoriesCommandTest(TestCase):
         out = StringIO()
         call_command(self.CMD_NAME, stdout=out)
 
-        self.assertEquals(Capability.objects.all().count(), 8)
-        self.assertEquals(Advertising.objects.all().count(), 9)
-        self.assertEquals(Analytic.objects.all().count(), 14)
-        self.assertEquals(Network.objects.all().count(), 9)
-        self.assertEquals(TrackerCategory.objects.all().count(), 6)
+        self.assertEqual(Capability.objects.all().count(), 8)
+        self.assertEqual(Advertising.objects.all().count(), 9)
+        self.assertEqual(Analytic.objects.all().count(), 14)
+        self.assertEqual(Network.objects.all().count(), 9)
+        self.assertEqual(TrackerCategory.objects.all().count(), 6)
 
     def test_categories_are_created_only_once(self):
         out = StringIO()
         call_command(self.CMD_NAME, stdout=out)
         call_command(self.CMD_NAME, stdout=out)
 
-        self.assertEquals(Capability.objects.all().count(), 8)
-        self.assertEquals(Advertising.objects.all().count(), 9)
-        self.assertEquals(Analytic.objects.all().count(), 14)
-        self.assertEquals(Network.objects.all().count(), 9)
-        self.assertEquals(TrackerCategory.objects.all().count(), 6)
+        self.assertEqual(Capability.objects.all().count(), 8)
+        self.assertEqual(Advertising.objects.all().count(), 9)
+        self.assertEqual(Analytic.objects.all().count(), 14)
+        self.assertEqual(Network.objects.all().count(), 9)
+        self.assertEqual(TrackerCategory.objects.all().count(), 6)
