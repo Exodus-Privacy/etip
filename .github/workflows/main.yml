@@ -5,15 +5,13 @@ on:
   push:
     branches:
       - master
-    tags:
-      - v*
   pull_request:
     branches:
       - master
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -26,7 +24,7 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pipenv
@@ -40,20 +38,9 @@ jobs:
       - name: Check vulnerabilites in dependencies
         run: |
           pipenv check
-      - name: Run Tests
+      - name: Run tests
         run: |
           cd etip
           python manage.py test
         env:
           DJANGO_SETTINGS_MODULE: etip.settings.dev
-  release:
-    needs: build
-    name: Create Github release
-    if: github.event_name == 'push' && github.ref_type == 'tag'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Create release
-        run: gh release create ${GITHUB_REF_NAME} --title ${GITHUB_REF_NAME} --generate-notes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
