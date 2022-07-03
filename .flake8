@@ -1,3 +1,7 @@
 [flake8]
 exclude = ./etip/*/migrations, ./etip/*/settings
 max-line-length = 100
+
+; flake8-import-order
+import-order-style = appnexus
+application-import-names = trackers,restful_api

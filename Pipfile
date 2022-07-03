@@ -15,3 +15,4 @@ markdown = "~=3.3.6"
 [dev-packages]
 flake8 = "~=4.0"
 autopep8 = "~=1.6"
+flake8-import-order = "~=0.18"
