@@ -1,12 +1,14 @@
-from django.contrib.auth.models import User
-from django.test import TestCase, Client, RequestFactory
-from django.core.management import call_command
-from django.core.management.base import CommandError
-from django.core.exceptions import ValidationError, PermissionDenied
-from .models import Tracker, Capability, Advertising, \
-    Analytic, Network, TrackerCategory, TrackerApproval
 from io import BytesIO, StringIO
 from unittest.mock import patch
+
+from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.management import call_command
+from django.core.management.base import CommandError
+from django.test import Client, RequestFactory, TestCase
+
+from .models import Advertising, Analytic, Capability, \
+    Network, Tracker, TrackerApproval, TrackerCategory
 from .views import approve, revoke, ship
 
 

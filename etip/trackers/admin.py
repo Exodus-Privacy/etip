@@ -1,8 +1,8 @@
-from reversion.admin import VersionAdmin
 from django.contrib import admin
+from reversion.admin import VersionAdmin
 
-from trackers.models import Tracker, Capability, Advertising, \
-    Analytic, Network, TrackerCategory, TrackerApproval
+from trackers.models import Advertising, Analytic, Capability, \
+    Network, Tracker, TrackerApproval, TrackerCategory
 
 
 @admin.register(Tracker)

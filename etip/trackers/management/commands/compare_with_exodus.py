@@ -1,8 +1,9 @@
-from django.core.management.base import BaseCommand, CommandError
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
-from django.db.models import Q
 from functools import reduce
 import operator
+
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.core.management.base import BaseCommand, CommandError
+from django.db.models import Q
 import requests
 
 from trackers.models import Tracker

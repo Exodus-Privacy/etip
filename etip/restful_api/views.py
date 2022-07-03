@@ -1,6 +1,7 @@
 from rest_framework import viewsets
-from trackers.models import Tracker
+
 from restful_api.serializers import TrackerSerializer
+from trackers.models import Tracker
 
 
 class TrackerViewSet(viewsets.ReadOnlyModelViewSet):

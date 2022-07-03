@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from trackers.models import \
-    Capability, Advertising, Analytic, Network, TrackerCategory
+    Advertising, Analytic, Capability, Network, TrackerCategory
 
 
 class Command(BaseCommand):

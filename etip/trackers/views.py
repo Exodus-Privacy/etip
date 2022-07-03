@@ -1,12 +1,11 @@
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.http.response import Http404
-from django.core.paginator import Paginator
-from django.shortcuts import render, redirect
-from django.core.exceptions import ValidationError, PermissionDenied
+from django.shortcuts import redirect, render
+import reversion
 
 from .models import Tracker, TrackerApproval
-
-import reversion
 
 
 def home(request):
