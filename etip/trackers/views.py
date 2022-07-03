@@ -144,7 +144,7 @@ def approve(request, id):
         approver=request.user
     )
     approval.save()
-    return redirect('/trackers/{}'.format(tracker.id))
+    return redirect(f'/trackers/{tracker.id}')
 
 
 def revoke(request, id):
@@ -164,7 +164,7 @@ def revoke(request, id):
         approver=request.user
     )
     approval.delete()
-    return redirect('/trackers/{}'.format(tracker.id))
+    return redirect(f'/trackers/{tracker.id}')
 
 
 def ship(request, id):
@@ -186,7 +186,7 @@ def ship(request, id):
         reversion.set_user(request.user)
         reversion.set_comment("Shipped to exodus")
 
-    return redirect('/trackers/{}'.format(tracker.id))
+    return redirect(f'/trackers/{tracker.id}')
 
 
 def needs_rework(request, id):
@@ -208,7 +208,7 @@ def needs_rework(request, id):
         reversion.set_user(request.user)
         reversion.set_comment("Set as 'needs rework'")
 
-    return redirect('/trackers/{}'.format(tracker.id))
+    return redirect(f'/trackers/{tracker.id}')
 
 
 def needs_no_rework(request, id):
@@ -230,4 +230,4 @@ def needs_no_rework(request, id):
         reversion.set_user(request.user)
         reversion.set_comment("Set as 'rework was done'")
 
-    return redirect('/trackers/{}'.format(tracker.id))
+    return redirect(f'/trackers/{tracker.id}')

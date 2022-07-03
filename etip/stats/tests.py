@@ -18,7 +18,7 @@ class IndexStatsListViewTests(TestCase):
 
         response = c.get(self.PATH)
 
-        login_url = "{}?next={}".format(settings.LOGIN_URL, self.PATH)
+        login_url = f"{settings.LOGIN_URL}?next={self.PATH}"
         self.assertRedirects(response, login_url)
 
     def test_get_empty_json_if_no_data(self):

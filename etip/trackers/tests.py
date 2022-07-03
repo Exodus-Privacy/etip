@@ -633,12 +633,12 @@ class IndexTrackerListViewTests(TestCase):
     def test_with_results_and_paginate(self):
         for i in range(0, 25):
             Tracker(
-                name='AcTracker_name_{}'.format(i)
+                name=f'AcTracker_name_{i}'
             ).save()
 
         for i in range(0, 10):
             Tracker(
-                name='AbTracker_name_{}'.format(i)
+                name=f'AbTracker_name_{i}'
             ).save()
 
         c = Client()
@@ -654,13 +654,13 @@ class IndexTrackerListViewTests(TestCase):
     def test_with_all_filters_and_paginate(self):
         for i in range(0, 25):
             Tracker(
-                name='AcTracker_name_{}'.format(i),
+                name=f'AcTracker_name_{i}',
                 code_signature='toto.com'
             ).save()
 
         for i in range(0, 10):
             Tracker(
-                name='AbTracker_name_{}'.format(i)
+                name=f'AbTracker_name_{i}'
             ).save()
 
         c = Client()
@@ -800,7 +800,7 @@ class DisplayTrackerListViewTests(TestCase):
         )
 
         c = Client()
-        response = c.get('/trackers/{}/'.format(tracker.id))
+        response = c.get(f'/trackers/{tracker.id}/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, tracker.name, 2)
         self.assertNotContains(response, "Collision detected")
@@ -818,11 +818,10 @@ class DisplayTrackerListViewTests(TestCase):
             network_signature='network.signature',
             website='https://website2'
         )
-        msg = "<a href=\"/trackers/{}/\">{}</a> (code signature)".format(
-            tracker_2.id, tracker_2.name)
+        msg = f"<a href=\"/trackers/{tracker_2.id}/\">{tracker_2.name}</a> (code signature)"
 
         c = Client()
-        response = c.get('/trackers/{}/'.format(tracker_1.id))
+        response = c.get(f'/trackers/{tracker_1.id}/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Collision detected")
         self.assertContains(response, msg)
@@ -840,11 +839,10 @@ class DisplayTrackerListViewTests(TestCase):
             network_signature='network.signature',
             website='https://website2'
         )
-        msg = "<a href=\"/trackers/{}/\">{}</a> (network signature)".format(
-            tracker_2.id, tracker_2.name)
+        msg = f"<a href=\"/trackers/{tracker_2.id}/\">{tracker_2.name}</a> (network signature)"
 
         c = Client()
-        response = c.get('/trackers/{}/'.format(tracker_1.id))
+        response = c.get(f'/trackers/{tracker_1.id}/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Collision detected")
         self.assertContains(response, msg)
@@ -865,11 +863,11 @@ class DisplayTrackerListViewTests(TestCase):
         TrackerApproval.objects.create(approver=user_2, tracker=tracker)
 
         c = Client()
-        response = c.get('/trackers/{}/'.format(tracker.id))
+        response = c.get(f'/trackers/{tracker.id}/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, tracker.name, 2)
-        self.assertContains(response, "✔️ {}".format(user_1.username))
-        self.assertContains(response, "✔️ {}".format(user_2.username))
+        self.assertContains(response, f"✔️ {user_1.username}")
+        self.assertContains(response, f"✔️ {user_2.username}")
 
 
 class ApproveTrackerViewTests(TestCase):
@@ -886,12 +884,12 @@ class ApproveTrackerViewTests(TestCase):
 
     def test_without_login_gets_rejected(self):
         c = Client()
-        response = c.post('/trackers/{}/approve/'.format(self.tracker))
+        response = c.post(f'/trackers/{self.tracker}/approve/')
         self.assertEqual(response.status_code, 403)
 
     def test_with_login_that_approvers_changed(self):
         request = self.factory.post(
-            '/trackers/{}/approve/'.format(self.tracker))
+            f'/trackers/{self.tracker}/approve/')
         request.user = self.user
         response = approve(request, self.tracker.id)
 
@@ -900,7 +898,7 @@ class ApproveTrackerViewTests(TestCase):
 
     def test_get_request_does_not_do_anything(self):
         request = self.factory.get(
-            '/trackers/{}/approve/'.format(self.tracker))
+            f'/trackers/{self.tracker}/approve/')
         request.user = self.user
         response = approve(request, self.tracker.id)
 
@@ -924,12 +922,12 @@ class RevokeTrackerViewTests(TestCase):
 
     def test_without_login_gets_rejected(self):
         c = Client()
-        response = c.post('/trackers/{}/revoke/'.format(self.tracker))
+        response = c.post(f'/trackers/{self.tracker}/revoke/')
         self.assertEqual(response.status_code, 403)
 
     def test_with_login_that_approvers_changed(self):
         request = self.factory.post(
-            '/trackers/{}/revoke/'.format(self.tracker))
+            f'/trackers/{self.tracker}/revoke/')
         request.user = self.user
         response = revoke(request, self.tracker.id)
 
@@ -938,7 +936,7 @@ class RevokeTrackerViewTests(TestCase):
 
     def test_get_request_does_not_do_anything(self):
         request = self.factory.get(
-            '/trackers/{}/revoke/'.format(self.tracker))
+            f'/trackers/{self.tracker}/revoke/')
         request.user = self.user
         response = revoke(request, self.tracker.id)
 
@@ -959,7 +957,7 @@ class ShipTrackerViewTests(TestCase):
 
     def test_without_login_gets_rejected(self):
         c = Client()
-        response = c.post('/trackers/{}/ship/'.format(self.tracker))
+        response = c.post(f'/trackers/{self.tracker}/ship/')
         self.assertEqual(response.status_code, 403)
 
     def test_without_super_user_gets_rejected(self):
@@ -967,7 +965,7 @@ class ShipTrackerViewTests(TestCase):
             username='testuser1', password='12345')
 
         request = self.factory.post(
-            '/trackers/{}/ship/'.format(self.tracker))
+            f'/trackers/{self.tracker}/ship/')
         request.user = user
         with self.assertRaises(PermissionDenied):
             ship(request, self.tracker.id)
@@ -980,7 +978,7 @@ class ShipTrackerViewTests(TestCase):
             username='testuser1', password='12345', email='toto')
 
         request = self.factory.post(
-            '/trackers/{}/ship/'.format(self.tracker))
+            f'/trackers/{self.tracker}/ship/')
         request.user = super_user
         response = ship(request, self.tracker.id)
 
@@ -993,7 +991,7 @@ class ShipTrackerViewTests(TestCase):
             username='testuser1', password='12345', email='toto')
 
         request = self.factory.get(
-            '/trackers/{}/ship/'.format(self.tracker))
+            f'/trackers/{self.tracker}/ship/')
         request.user = super_user
         response = ship(request, self.tracker.id)
 
