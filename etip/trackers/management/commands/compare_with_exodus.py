@@ -1,8 +1,9 @@
-from django.core.management.base import BaseCommand, CommandError
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
-from django.db.models import Q
 from functools import reduce
 import operator
+
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.core.management.base import BaseCommand, CommandError
+from django.db.models import Q
 import requests
 
 from trackers.models import Tracker
@@ -59,13 +60,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         exodus_trackers = self.get_all_from_exodus(options['exodus_hostname'])
         self.stdout.write(
-            'Retrieved {} trackers from Exodus'.format(len(exodus_trackers)))
+            f'Retrieved {len(exodus_trackers)} trackers from Exodus')
         self.count_etip_trackers()
 
         if options['ignore_field']:
             self.stdout.write(
-                'Going to ignore field {} in comparison.'.format(
-                    options['ignore_field']))
+                f"Going to ignore field {options['ignore_field']} in comparison.")
         if options['quiet']:
             self.stdout.write(
                 'Using quiet mode; Not going to display diff details.')
@@ -91,14 +91,10 @@ class Command(BaseCommand):
     def display_diff(
             self, diff_fields, exodus_tracker, etip_tracker, is_quiet):
         for field in diff_fields:
-            self.stdout.write('[{}]'.format(field))
+            self.stdout.write(f'[{field}]')
             if not is_quiet:
-                self.stdout.write('etip  : {}'.format(
-                    getattr(etip_tracker, field)
-                ))
-                self.stdout.write('exodus: {}'.format(
-                    exodus_tracker.get(field)
-                ))
+                self.stdout.write(f'etip  : {getattr(etip_tracker, field)}')
+                self.stdout.write(f'exodus: {exodus_tracker.get(field)}')
 
     def find_etip_tracker(self, tracker_details, is_quiet, ignore_field):
         search_filters = self.build_query(tracker_details)
@@ -107,23 +103,17 @@ class Command(BaseCommand):
                 is_in_exodus=False
             ).get(search_filters)
         except MultipleObjectsReturned:
-            self.stdout.write('{} - {}'.format(
-                MULTIPLE_FOUND, tracker_details.get('name'))
-            )
+            self.stdout.write(f"{MULTIPLE_FOUND} - {tracker_details.get('name')}")
             return MULTIPLE_FOUND
         except ObjectDoesNotExist:
-            self.stdout.write('{} - {}'.format(
-                NOT_FOUND, tracker_details.get('name'))
-            )
+            self.stdout.write(f"{NOT_FOUND} - {tracker_details.get('name')}")
             return NOT_FOUND
         diff_fields = self.get_diff_fields(
             tracker_details, etip_tracker, ignore_field)
         if (len(diff_fields) == 0):
             return FOUND_AND_IDENTICAL
         else:
-            self.stdout.write('{} - {}'.format(
-                FOUND_BUT_DIFFERENT, tracker_details.get('name'))
-            )
+            self.stdout.write(f"{FOUND_BUT_DIFFERENT} - {tracker_details.get('name')}")
             self.display_diff(
                 diff_fields, tracker_details, etip_tracker, is_quiet)
             return FOUND_BUT_DIFFERENT
@@ -137,15 +127,13 @@ class Command(BaseCommand):
             result_counters[lookup_result] += 1
         self.stdout.write('Lookup results:')
         for type in TYPES:
-            self.stdout.write('** {}: {}'.format(type, result_counters[type]))
+            self.stdout.write(f'** {type}: {result_counters[type]}')
 
     def get_all_from_exodus(self, exodus_base_url):
         response = requests.get(exodus_base_url + EXODUS_API_PATH)
         if response.status_code != 200:
             raise CommandError(
-                'Unexpected status from API: {}'
-                .format(response.status_code)
-            )
+                f'Unexpected status from API: {response.status_code}')
         resp = response.json()
         if resp is None or resp.get('trackers') is None:
             raise CommandError('Empty response')
@@ -154,7 +142,4 @@ class Command(BaseCommand):
     def count_etip_trackers(self):
         nb_of_trackers = Tracker.objects.filter(is_in_exodus=True).count()
         self.stdout.write(
-            'Found {} trackers in ETIP DB expected to be in Exodus'.format(
-                nb_of_trackers
-            )
-        )
+            f'Found {nb_of_trackers} trackers in ETIP DB expected to be in Exodus')

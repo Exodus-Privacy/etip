@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 from django.urls import reverse
 
 from trackers.models import Tracker
@@ -18,7 +18,7 @@ class IndexStatsListViewTests(TestCase):
 
         response = c.get(self.PATH)
 
-        login_url = "{}?next={}".format(settings.LOGIN_URL, self.PATH)
+        login_url = f"{settings.LOGIN_URL}?next={self.PATH}"
         self.assertRedirects(response, login_url)
 
     def test_get_empty_json_if_no_data(self):

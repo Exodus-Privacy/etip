@@ -46,5 +46,4 @@ class Command(BaseCommand):
             )
 
             model.save()
-
-            print('%s saved' % model.name)
+            print(f'{model.name} saved')

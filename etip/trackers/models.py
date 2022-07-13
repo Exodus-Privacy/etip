@@ -1,10 +1,10 @@
 import re
 import uuid
 
-from django.db import models
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
-from django.contrib.auth.models import User
+from django.db import models
 from reversion.models import Version
 
 

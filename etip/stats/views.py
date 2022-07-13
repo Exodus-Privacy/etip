@@ -1,7 +1,8 @@
 from datetime import timedelta
-from django.utils import timezone
+
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.utils import timezone
 
 from trackers.models import Tracker
 

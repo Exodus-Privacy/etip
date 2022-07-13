@@ -1,5 +1,6 @@
-from trackers.models import Tracker, TrackerCategory
 from rest_framework import serializers
+
+from trackers.models import Tracker, TrackerCategory
 
 
 class TrackerCategorySerializer(serializers.ModelSerializer):
