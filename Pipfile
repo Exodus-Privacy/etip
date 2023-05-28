@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "==3.2.18"
+django = "==3.2.19"
 django-bootstrap3 = "~=21.2"
 django-reversion = "~=4.0.2"
 djangorestframework = "~=3.13.0"
