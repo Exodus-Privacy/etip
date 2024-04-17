@@ -8,7 +8,7 @@ django = "==3.2.25"
 django-bootstrap3 = "~=21.2"
 django-reversion = "~=4.0.2"
 djangorestframework = "~=3.13.0"
-gunicorn = "~=19.10"
+gunicorn = "~=22.0"
 markdown = "~=3.3.6"
 requests = "~=2.31"
 
