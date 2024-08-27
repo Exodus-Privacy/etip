@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
 from account.forms.registration import CustomUserCreationForm
+from django.shortcuts import render
+
 
 # Create your views here.
 def register_view(request):
@@ -11,4 +11,5 @@ def register_view(request):
         else:
             errors = form.errors
             return render(request, 'account/register.html', {'errors': errors})
+
     return render(request, 'account/register.html')
