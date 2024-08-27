@@ -22,4 +22,5 @@ urlpatterns = [
     path('api/', include('restful_api.urls')),
     path('stats/', include('stats.urls')),
     path('', include('trackers.urls')),
+    path('account/', include('account.urls')),
 ]

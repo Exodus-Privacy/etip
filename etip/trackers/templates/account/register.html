@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Register a New User
+{% endblock %}
+
+{% block content %}
+    <style>
+        ul.errorlist{
+            margin: 0%;
+        }
+    </style>
+    <div> 
+        <h1 style="text-align: center;">Register a New User</h1>
+        
+        <form class="user-register" action="/account/register" method="post">
+            {% csrf_token %}
+            <label for="first-name">First Name</label>
+            <input type="text" name="first_name" maxlength="150" id="first-name"> 
+
+            <label for="last-name">Last Name</label>
+            <input type="text" name="last_name" maxlength="150" id="last-name"> 
+
+            <div>         
+                {% if errors.length != 0 %}
+                    {{errors.username}}
+                {% endif %}
+            </div>
+            <label for="id_username">Username<span>*</span></label>
+            <input type="text" name="username" maxlength="150" autocapitalize="none" autocomplete="username" autofocus="" required id="id_username">
+            
+            <div>
+                {% if errors.length != 0 %}
+                    {{errors.password1}}
+                {% endif %}
+            </div>
+
+            <label for="id_email">Email<span>*</span></label>
+            <input type="email" name="email" required id="id_email">
+
+            <label for="id_password1">Password<span>*</span></label>
+            <input type="password" name="password1" autocomplete="new-password" required id="id_password1">
+            
+            <span class="helptext">
+                <ul>
+                    <li>Your password can’t be too similar to your other personal information.</li>
+                    <li>Your password must contain at least 8 characters.</li>
+                    <li>Your password can’t be a commonly used password.</li>
+                    <li>Your password can’t be entirely numeric.</li>
+                </ul>
+            </span>
+            <div>
+                {% if errors.length != 0 %}
+                    {{errors.password2}}
+                {% endif %}
+            </div>
+            <label for="id_password2">Password confirmation<span>*</span></label>
+            <input type="password" name="password2" autocomplete="new-password" required id="id_password2">
+            <button>Submit</button>
+        </form>
+
+    </div>
+{% endblock %}
