@@ -1,0 +1,27 @@
+.user-register {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 0;
+}
+
+.user-register label span {
+    color: red;
+
+}
+
+.user-register button {
+    max-width: fit-content;
+}
+
+.errorlist {
+    color: #F00;
+    margin: 0;
+    padding: 0;
+    
+}
+
+
+.errorlist li::marker {
+    content: '🚨 ';
+}
