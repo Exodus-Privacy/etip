@@ -4,7 +4,7 @@
 
 You can find our list of [issues](https://github.com/Exodus-Privacy/etip/issues) and in particular the ones with the tag ["good first issue"](https://github.com/Exodus-Privacy/etip/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) or ["hacktoberfest"](https://github.com/Exodus-Privacy/etip/issues?q=is%3Aissue+is%3Aopen+label%3Ahacktoberfest)
 
-[Documentation](README.md#development-environment) is available to help you set up your local instance.
+[Documentation](doc/install.md) is available to help you set up your local instance.
 
 ## What you need to respect
 

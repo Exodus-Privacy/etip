@@ -1,0 +1,12 @@
+services:
+
+  etip:
+    build:
+      context: ./
+      dockerfile: ./docker/Dockerfile
+    env_file: .env
+    ports:
+      - "80:8000"
+    user: ${uid}
+    volumes:
+      - ./etip:/etip/etip:rw,cached
