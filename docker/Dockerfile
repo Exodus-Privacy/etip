@@ -1,7 +1,6 @@
 FROM python:3.11-slim-bookworm
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
-  postgresql-client-15=15* \
   gettext=0.* \
   pipenv=2022.12.* \
   && apt-get clean \
