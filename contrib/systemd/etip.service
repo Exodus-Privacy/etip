@@ -4,8 +4,10 @@ After=network.target
 
 [Service]
 User=etip
+Group=etip
+Environment=DJANGO_SETTINGS_MODULE=etip.settings.production
 WorkingDirectory=/home/etip/etip/etip/
-ExecStart=/home/etip/etip/venv/bin/gunicorn --env DJANGO_SETTINGS_MODULE=etip.settings.production --workers 1 --timeout 240 --bind 0.0.0.0:8899 etip.wsgi
+ExecStart=/home/etip/etip/venv/bin/gunicorn --workers 1 --timeout 240 --bind 0.0.0.0:8899 etip.wsgi
 StandardOutput=journal
 StandardError=inherit
 
