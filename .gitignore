@@ -6,3 +6,15 @@ etip/db.sqlite3
 .vscode
 
 .env
+
+# Settings files
+.env
+etip/etip/settings/custom_dev.py
+etip/etip/settings/custom_docker.py
+etip/etip/settings/production.py
+
+# Static files
+etip/staticfiles
+
+# Translations
+*.mo
