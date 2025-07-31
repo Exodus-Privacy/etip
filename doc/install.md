@@ -55,6 +55,7 @@ docker-compose exec etip /entrypoint.sh "<command>"
 
 to make actions, where `<command>` can be:
 
+- `collect-static`: Collect all static files
 - `compare-with-exodus`: Looks for differences with εxodus and local trackers
 - `compile-messages`: Compile the translation messages
 - `create-db`: Create the database and apply migrations
