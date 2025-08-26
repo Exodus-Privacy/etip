@@ -5,6 +5,7 @@ declare -r pymanage="$pyexe manage.py"
 declare -r custom_docker_settings="/etip/etip/etip/settings/custom_docker.py"
 
 declare -Ar commandList=(
+	[collect-static]=collectStatic
 	[compare-with-exodus]=compareWithExodus
 	[compile-messages]=compileMessages
 	[create-db]=createDB
@@ -17,6 +18,7 @@ declare -Ar commandList=(
 )
 
 declare -Ar commandHelpList=(
+	[collect-static]='collect all static files'
 	[compare-with-exodus]='looks for differences with εxodus and local trackers'
 	[compile-messages]='compile translation messages'
 	[create-db]='create database if required and attend to migrations'
@@ -80,6 +82,10 @@ function createDB() {
 
 function createUser() {
 	$pymanage createsuperuser
+}
+
+function collectStatic() {
+	$pymanage collectstatic --noinput
 }
 
 function startEtip() {
