@@ -9,7 +9,7 @@ django-bootstrap3 = "~=25.3"
 django-reversion = "~=6.0.0"
 djangorestframework = "~=3.16.1"
 gunicorn = "~=23.0"
-markdown = "~=3.3.6"
+markdown = "~=3.8.1"
 requests = "~=2.32"
 
 [dev-packages]
