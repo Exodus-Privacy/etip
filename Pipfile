@@ -10,7 +10,7 @@ django-reversion = "~=6.0.0"
 djangorestframework = "~=3.16.1"
 gunicorn = "~=23.0"
 markdown = "~=3.8.1"
-requests = "~=2.32"
+requests = "~=2.33"
 
 [dev-packages]
 autopep8 = "~=2.3"
